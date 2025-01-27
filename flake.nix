@@ -17,6 +17,8 @@
         go
         go-migrate
         docker
+        make
+        cassandra
       ];
 
       shellHook = ''
