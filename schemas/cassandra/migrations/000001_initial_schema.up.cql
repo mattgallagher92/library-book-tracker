@@ -1,9 +1,3 @@
--- Create the keyspace if it doesn't exist
-CREATE KEYSPACE IF NOT EXISTS library 
-WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
-
-USE library;
-
 -- Books table for basic book information
 CREATE TABLE IF NOT EXISTS books (
     book_id uuid,

@@ -27,3 +27,22 @@ Start background services, such as Cassandra, with
 ```sh
 docker compose up -d
 ```
+
+### Database Migrations
+
+To set up and migrate the database:
+
+1. Initialize the Cassandra keyspace:
+```sh
+make init-keyspace
+```
+
+2. Run the migrations:
+```sh
+make migrate-up
+```
+
+To rollback migrations:
+```sh
+make migrate-down
+```
