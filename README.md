@@ -19,3 +19,11 @@ Nevertheless, I have tried to choose a problem domain for which a service-orient
 In order to run a library effectively, it is necessary to allow staff to see and update the locations of books and allow people to borrow and return books. In addition, it is useful to notify people before they need to take action, for example return books to the library by depositing them in a self-service terminal's storage bin or empty a storage bin and replace books onto shelves.
 
 More details are available in [the specification](./docs/spec.md).
+
+## Local development
+
+Start background services, such as Cassandra, with
+
+```sh
+docker compose up -d
+```
