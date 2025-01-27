@@ -20,7 +20,7 @@
 
       shellHook = ''
         go version
-        docker version
+        docker --version
       '';
     };
   };
