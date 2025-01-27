@@ -15,6 +15,7 @@
     in pkgs.mkShell {
       packages = with pkgs; [
         go
+        go-migrate
         docker
       ];
 
