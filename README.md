@@ -30,14 +30,7 @@ docker compose up -d
 
 ### Database Migrations
 
-To set up and migrate the database:
-
-1. Initialize the Cassandra keyspace:
-```sh
-make init-keyspace
-```
-
-2. Run the migrations:
+To run the migrations:
 ```sh
 make migrate-up
 ```
@@ -46,3 +39,5 @@ To rollback migrations:
 ```sh
 make migrate-down
 ```
+
+Both commands will ensure the keyspace exists before proceeding.
