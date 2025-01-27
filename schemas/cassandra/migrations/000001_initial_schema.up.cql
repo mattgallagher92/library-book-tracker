@@ -1,5 +1,5 @@
 -- Books table for basic book information
-CREATE TABLE IF NOT EXISTS books (
+CREATE TABLE IF NOT EXISTS library.books (
     book_id uuid,
     title text,
     author text,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS books (
 );
 
 -- Track loans by borrower for quick loan count checks
-CREATE TABLE IF NOT EXISTS loans_by_borrower (
+CREATE TABLE IF NOT EXISTS library.loans_by_borrower (
     borrower_id uuid,
     book_id uuid,
     due_date timestamp,
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS loans_by_borrower (
 );
 
 -- Track current location of each book
-CREATE TABLE IF NOT EXISTS book_locations (
+CREATE TABLE IF NOT EXISTS library.book_locations (
     book_id uuid,
     location_type text,
     location_detail text,
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS book_locations (
 );
 
 -- Track terminal bin contents and capacity
-CREATE TABLE IF NOT EXISTS terminal_bins (
+CREATE TABLE IF NOT EXISTS library.terminal_bins (
     terminal_id uuid,
     current_count int,
     capacity int,
