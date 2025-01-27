@@ -16,7 +16,6 @@
       packages = with pkgs; [
         go
         docker
-        docker-compose
       ];
 
       shellHook = ''
