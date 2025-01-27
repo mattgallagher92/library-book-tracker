@@ -15,10 +15,13 @@
     in pkgs.mkShell {
       packages = with pkgs; [
         go
+        docker
+        docker-compose
       ];
 
       shellHook = ''
         go version
+        docker version
       '';
     };
   };

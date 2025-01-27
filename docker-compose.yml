@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  cassandra:
+    image: cassandra:latest
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=library_cluster
+      - CASSANDRA_DC=datacenter1
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+      # Mount migrations for auto-application
+      - ./schemas/cassandra/migrations:/docker-entrypoint-initdb.d
+
+volumes:
+  cassandra_data:
