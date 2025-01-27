@@ -8,5 +8,3 @@ migrate-down:
 	./scripts/wait-for-cassandra.sh && \
 	migrate -database "cassandra://localhost:9042/library" -path ./schemas/cassandra/migrations down
 
-wait-for-cassandra:
-	./scripts/wait-for-cassandra.sh

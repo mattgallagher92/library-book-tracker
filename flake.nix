@@ -17,13 +17,14 @@
         go
         go-migrate
         docker
-        make
+        gnumake
         cassandra
       ];
 
       shellHook = ''
         go version
         docker --version
+        cqlsh --version
       '';
     };
   };
