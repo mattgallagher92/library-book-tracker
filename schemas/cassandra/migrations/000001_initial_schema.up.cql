@@ -11,9 +11,11 @@ CREATE TABLE IF NOT EXISTS library.loans_by_borrower (
     borrower_id uuid,
     book_id uuid,
     due_date timestamp,
+    returned_date timestamp,
     PRIMARY KEY (borrower_id, book_id)
 );
 
+-- TODO: consider merging into books table.
 -- Track current location of each book
 CREATE TABLE IF NOT EXISTS library.book_locations (
     book_id uuid,
