@@ -28,10 +28,15 @@ CREATE TABLE IF NOT EXISTS library.book_locations (
 );
 
 -- Create indexes for book_locations
-CREATE INDEX IF NOT EXISTS book_locations_title_idx 
-    ON library.book_locations (title);
-CREATE INDEX IF NOT EXISTS book_locations_current_location_idx 
-    ON library.book_locations ((current_location_type, current_location_id));
+CREATE INDEX IF NOT EXISTS book_locations_title_idx
+    ON library.book_locations (title)
+    USING 'sai';
+CREATE INDEX IF NOT EXISTS book_locations_current_location_type_idx
+    ON library.book_locations (current_location_type)
+    USING 'sai';
+CREATE INDEX IF NOT EXISTS book_locations_current_location_id_idx
+    ON library.book_locations (current_location_id)
+    USING 'sai';
 
 -- Pagers table
 CREATE TABLE IF NOT EXISTS library.pagers (

@@ -18,7 +18,7 @@ These queries are required to support the main functional requirements:
 
 Borrower: ID, name, email address, number of checked out books. Query by ID. Partion key: ID.
 Storage bin: terminal ID, capacity, current number of stored books. Query by terminal ID. Partion key: terminal ID.
-Book locations: book ID, title, author surname, author first name, assigned shelf label, current location type, current location ID. Sort and filter by title and author surname. Partition key: book ID; clustering columns: author surname, author first name, book title. Index on book title. Index on current location type, current location ID pair.
+Book locations: book ID, title, author surname, author first name, assigned shelf label, current location type, current location ID. Sort and filter by title and author surname. Partition key: book ID; clustering columns: author surname, author first name, book title. Add indexes on book title, current location type, current location ID.
 Pagers: ID, status (on/off). Partition key: ID; clustering columns: status.
 Loans: borrower ID, borrower name, borrower email address, book ID, book title, book author, due date, returned date. Query by due date. Partition key: borrower ID; clustering columns: due date, book ID.
 
