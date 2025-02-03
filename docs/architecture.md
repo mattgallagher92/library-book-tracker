@@ -25,10 +25,11 @@ Introducing event sourcing in what's an already very unfamiliar stack seems like
 
 ## Services
 
-- Self-service terminal service: provides UI for self-service terminal and tracks storage bin contents/capacity.
-- Borrower management service: manages borrower information and operations.
-- Book inventory service: handles operations relating to the locations of books.
-- Librarian portal service: provides UI for librarians to view and update book locations.
+- Book inventory service: handles registration of newly-acquired books (not implemented; data seeded with migrations) and their movement around the library.
+- Borrower service: handles management of borrower details. (Not implemented; data seeded with migrations)
+- Loans service: handles checking out and returning books.
+- Self-service terminal service: provides UI for self-service terminal.
+- Librarian portal service: provides UI for librarians.
 - Borrower notification service: checks, on a schedule (daily), whether borrowers should recieve notifications.
 - Email service: sends emails.
 - Pager service: sends pager messages.
@@ -37,16 +38,15 @@ Introducing event sourcing in what's an already very unfamiliar stack seems like
 
 ### RPC
 
-- Self-service terminal service -> borrower management service: borrow book command; response indicates whether the borrower was allowed to borrow the book or not.
-- Self-service teminal service -> borrower management service: return book command; response indicates operation success.
+- Self-service terminal service -> loans service: borrow book command; response indicates whether the borrower was allowed to borrow the book or not.
+- Self-service teminal service -> loans service: return book command; response indicates operation success.
 - Self-service terminal service -> book inventory service: storage bin emptied onto trolley command.
-- Librarian portal -> book inventory service: books moved from trolley to shelves command.
+- Librarian portal service -> book inventory service: books moved from trolley to shelves command.
 - Librarian portal service -> book inventory service: full inventory location query; response includes location of all inventory.
 
 ### Asynchronous message passing
 
-- Borrower management service -> book inventory service: book borrowed event.
-- Borrower management service -> book inventory service: book returned event.
-- Self-service terminal service -> pager service: bin capacity low notification.
+- Loans service -> book inventory service: book returned event.
+- Book inventory service -> pager service: bin capacity low notification.
 - Borrower notification service -> email service: book due soon notification.
 
