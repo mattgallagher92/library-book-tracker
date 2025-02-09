@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS library.book_locations (
     author_first_name text,
     assigned_shelf_label text,
     current_location_type text,
-    current_location_id uuid,
+    current_location_id text,
     PRIMARY KEY (book_id, author_surname, author_first_name, title)
 );
 
