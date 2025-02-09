@@ -1,14 +1,14 @@
 -- Seed borrowers
-INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (uuid(), 'John Smith', 'john.smith@example.com', 0);
-INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (uuid(), 'Emma Wilson', 'emma.wilson@example.com', 0);
-INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (uuid(), 'Michael Brown', 'michael.brown@example.com', 0);
-INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (uuid(), 'Sarah Davis', 'sarah.davis@example.com', 0);
-INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (uuid(), 'James Johnson', 'james.johnson@example.com', 0);
-INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (uuid(), 'Lisa Anderson', 'lisa.anderson@example.com', 0);
-INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (uuid(), 'David Martinez', 'david.martinez@example.com', 0);
-INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (uuid(), 'Jennifer Taylor', 'jennifer.taylor@example.com', 0);
-INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (uuid(), 'Robert Wilson', 'robert.wilson@example.com', 0);
-INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (uuid(), 'Patricia Moore', 'patricia.moore@example.com', 0);
+INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (968c0ee3-fe04-4c11-90c2-7689c75056a8, 'John Smith', 'john.smith@example.com', 0);
+INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (41f253f2-9648-4d90-a23a-41a87310a2c7, 'Emma Wilson', 'emma.wilson@example.com', 0);
+INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (ac159e0f-0e89-4263-b445-2ddce98bc7f3, 'Michael Brown', 'michael.brown@example.com', 0);
+INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (f1be7499-30b2-49ea-81f4-a9258f4a03e3, 'Sarah Davis', 'sarah.davis@example.com', 0);
+INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (45c170d2-530b-4e00-9824-c41a1986a3e7, 'James Johnson', 'james.johnson@example.com', 0);
+INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (506c9d2c-e191-4157-ba0e-add6ed5dbc04, 'Lisa Anderson', 'lisa.anderson@example.com', 0);
+INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (ec57e24d-d92c-4713-ba08-6968a200345e, 'David Martinez', 'david.martinez@example.com', 0);
+INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (0ba907ed-c527-4c55-9624-59d04653a47c, 'Jennifer Taylor', 'jennifer.taylor@example.com', 0);
+INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (08a5a2d0-a062-4e38-b9da-d328e5fc4a12, 'Robert Wilson', 'robert.wilson@example.com', 0);
+INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES (f0fdf952-fe07-456c-9dc2-06ff4d00fb62, 'Patricia Moore', 'patricia.moore@example.com', 0);
 
 -- Seed book locations (grouped by author on shelves)
 -- Shelf A1: Science Fiction
