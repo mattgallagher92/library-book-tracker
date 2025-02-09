@@ -17,3 +17,9 @@ migrate-up: init-keyspace
 migrate-down: init-keyspace
 	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true" -path ./schemas/cassandra/migrations down
 
+seed-up: migrate-up
+	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true" -path ./schemas/cassandra/seeds up
+
+seed-down: 
+	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true" -path ./schemas/cassandra/seeds down
+
