@@ -20,6 +20,6 @@ migrate-down: init-keyspace
 seed-up: migrate-up
 	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds up
 
-seed-down: 
+seed-down: init-keyspace
 	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds down
 
