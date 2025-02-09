@@ -4,4 +4,5 @@ DROP TABLE IF EXISTS library.loans;
 DROP TABLE IF EXISTS library.pagers;
 DROP TABLE IF EXISTS library.book_locations;
 DROP TABLE IF EXISTS library.storage_bin;
+DROP TABLE IF EXISTS library.borrower_book_count;
 DROP TABLE IF EXISTS library.borrower;

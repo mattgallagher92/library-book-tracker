@@ -21,7 +21,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 	// First check if borrower can take out more books
 	var checkedOutBooks int
 	if err := session.Query(
-		`SELECT checked_out_books FROM borrower WHERE id = ?`,
+		`SELECT checked_out_books FROM borrower_book_count WHERE id = ?`,
 		cmd.BorrowerID,
 	).Scan(&checkedOutBooks); err != nil {
 		return err
@@ -36,7 +36,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 
 	// Update borrower's checked out book count
 	batch.Query(
-		`UPDATE borrower SET checked_out_books = checked_out_books + 1 WHERE id = ?`,
+		`UPDATE borrower_book_count SET checked_out_books = checked_out_books + 1 WHERE id = ?`,
 		cmd.BorrowerID,
 	)
 
@@ -78,4 +78,3 @@ func main() {
 	// TODO: Initialize Cassandra session and handle requests
 	log.Println("Loans service starting...")
 }
-

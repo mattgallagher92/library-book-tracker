@@ -1,13 +1,16 @@
--- Borrower table
 CREATE TABLE IF NOT EXISTS library.borrower (
     id uuid,
     name text,
     email_address text,
-    checked_out_books int,
     PRIMARY KEY (id)
 );
 
--- Storage bin table
+CREATE TABLE IF NOT EXISTS library.borrower_book_count (
+    id uuid,
+    checked_out_books counter,
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS library.storage_bin (
     terminal_id uuid,
     capacity int,
@@ -15,7 +18,6 @@ CREATE TABLE IF NOT EXISTS library.storage_bin (
     PRIMARY KEY (terminal_id)
 );
 
--- Book locations table
 CREATE TABLE IF NOT EXISTS library.book_locations (
     book_id uuid,
     title text,
@@ -27,7 +29,7 @@ CREATE TABLE IF NOT EXISTS library.book_locations (
     PRIMARY KEY (book_id, author_surname, author_first_name, title)
 );
 
--- Create indexes for book_locations
+-- Indexes for book_locations
 CREATE INDEX IF NOT EXISTS book_locations_title_idx
     ON library.book_locations (title)
     USING 'sai';
@@ -38,14 +40,12 @@ CREATE INDEX IF NOT EXISTS book_locations_current_location_id_idx
     ON library.book_locations (current_location_id)
     USING 'sai';
 
--- Pagers table
 CREATE TABLE IF NOT EXISTS library.pagers (
     id uuid,
     status text,
     PRIMARY KEY (id, status)
 );
 
--- Loans table
 CREATE TABLE IF NOT EXISTS library.loans (
     borrower_id uuid,
     due_date timestamp,
