@@ -13,44 +13,44 @@ INSERT INTO library.borrower (id, name, email_address, checked_out_books) VALUES
 -- Seed book locations (grouped by author on shelves)
 -- Shelf A1: Science Fiction
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'Foundation', 'Asimov', 'Isaac', 'A1', 'SHELF', uuid());
+VALUES (uuid(), 'Foundation', 'Asimov', 'Isaac', 'A1', 'SHELF', 'A1');
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'Foundation and Empire', 'Asimov', 'Isaac', 'A1', 'SHELF', uuid());
+VALUES (uuid(), 'Foundation and Empire', 'Asimov', 'Isaac', 'A1', 'SHELF', 'A1');
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'Second Foundation', 'Asimov', 'Isaac', 'A1', 'SHELF', uuid());
+VALUES (uuid(), 'Second Foundation', 'Asimov', 'Isaac', 'A1', 'SHELF', 'A1');
 
 -- Shelf A2: More Science Fiction
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'Dune', 'Herbert', 'Frank', 'A2', 'SHELF', uuid());
+VALUES (uuid(), 'Dune', 'Herbert', 'Frank', 'A2', 'SHELF', 'A2');
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'Dune Messiah', 'Herbert', 'Frank', 'A2', 'SHELF', uuid());
+VALUES (uuid(), 'Dune Messiah', 'Herbert', 'Frank', 'A2', 'SHELF', 'A2');
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'Children of Dune', 'Herbert', 'Frank', 'A2', 'SHELF', uuid());
+VALUES (uuid(), 'Children of Dune', 'Herbert', 'Frank', 'A2', 'SHELF', 'A2');
 
 -- Shelf B1: Fantasy
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'The Fellowship of the Ring', 'Tolkien', 'J.R.R.', 'B1', 'SHELF', uuid());
+VALUES (uuid(), 'The Fellowship of the Ring', 'Tolkien', 'J.R.R.', 'B1', 'SHELF', 'B1');
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'The Two Towers', 'Tolkien', 'J.R.R.', 'B1', 'SHELF', uuid());
+VALUES (uuid(), 'The Two Towers', 'Tolkien', 'J.R.R.', 'B1', 'SHELF', 'B1');
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'The Return of the King', 'Tolkien', 'J.R.R.', 'B1', 'SHELF', uuid());
+VALUES (uuid(), 'The Return of the King', 'Tolkien', 'J.R.R.', 'B1', 'SHELF', 'B1');
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'The Hobbit', 'Tolkien', 'J.R.R.', 'B1', 'SHELF', uuid());
+VALUES (uuid(), 'The Hobbit', 'Tolkien', 'J.R.R.', 'B1', 'SHELF', 'B1');
 
 -- Shelf B2: More Fantasy
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'A Game of Thrones', 'Martin', 'George R.R.', 'B2', 'SHELF', uuid());
+VALUES (uuid(), 'A Game of Thrones', 'Martin', 'George R.R.', 'B2', 'SHELF', 'B2');
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'A Clash of Kings', 'Martin', 'George R.R.', 'B2', 'SHELF', uuid());
+VALUES (uuid(), 'A Clash of Kings', 'Martin', 'George R.R.', 'B2', 'SHELF', 'B2');
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'A Storm of Swords', 'Martin', 'George R.R.', 'B2', 'SHELF', uuid());
+VALUES (uuid(), 'A Storm of Swords', 'Martin', 'George R.R.', 'B2', 'SHELF', 'B2');
 
 -- Shelf C1: Mystery
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'The Murder of Roger Ackroyd', 'Christie', 'Agatha', 'C1', 'SHELF', uuid());
+VALUES (uuid(), 'The Murder of Roger Ackroyd', 'Christie', 'Agatha', 'C1', 'SHELF', 'C1');
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'Murder on the Orient Express', 'Christie', 'Agatha', 'C1', 'SHELF', uuid());
+VALUES (uuid(), 'Murder on the Orient Express', 'Christie', 'Agatha', 'C1', 'SHELF', 'C1');
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
-VALUES (uuid(), 'Death on the Nile', 'Christie', 'Agatha', 'C1', 'SHELF', uuid());
+VALUES (uuid(), 'Death on the Nile', 'Christie', 'Agatha', 'C1', 'SHELF', 'C1');
 
 -- Continue with more books...
