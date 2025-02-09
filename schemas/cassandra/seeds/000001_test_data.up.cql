@@ -53,4 +53,50 @@ VALUES (uuid(), 'Murder on the Orient Express', 'Christie', 'Agatha', 'C1', 'SHE
 INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
 VALUES (uuid(), 'Death on the Nile', 'Christie', 'Agatha', 'C1', 'SHELF', 'C1');
 
--- Continue with more books...
+-- Shelf A3: More Science Fiction
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'Neuromancer', 'Gibson', 'William', 'A3', 'SHELF', 'A3');
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'Count Zero', 'Gibson', 'William', 'A3', 'SHELF', 'A3');
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'Mona Lisa Overdrive', 'Gibson', 'William', 'A3', 'SHELF', 'A3');
+
+-- Shelf A4: More Science Fiction
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'The Left Hand of Darkness', 'Le Guin', 'Ursula K.', 'A4', 'SHELF', 'A4');
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'The Dispossessed', 'Le Guin', 'Ursula K.', 'A4', 'SHELF', 'A4');
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'The Word for World is Forest', 'Le Guin', 'Ursula K.', 'A4', 'SHELF', 'A4');
+
+-- Shelf B3: More Fantasy
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'The Name of the Wind', 'Rothfuss', 'Patrick', 'B3', 'SHELF', 'B3');
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'The Wise Man''s Fear', 'Rothfuss', 'Patrick', 'B3', 'SHELF', 'B3');
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'The Slow Regard of Silent Things', 'Rothfuss', 'Patrick', 'B3', 'SHELF', 'B3');
+
+-- Shelf B4: More Fantasy
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'The Way of Kings', 'Sanderson', 'Brandon', 'B4', 'SHELF', 'B4');
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'Words of Radiance', 'Sanderson', 'Brandon', 'B4', 'SHELF', 'B4');
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'Oathbringer', 'Sanderson', 'Brandon', 'B4', 'SHELF', 'B4');
+
+-- Shelf C2: More Mystery
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'The Big Sleep', 'Chandler', 'Raymond', 'C2', 'SHELF', 'C2');
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'Farewell, My Lovely', 'Chandler', 'Raymond', 'C2', 'SHELF', 'C2');
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'The Long Goodbye', 'Chandler', 'Raymond', 'C2', 'SHELF', 'C2');
+
+-- Shelf C3: More Mystery
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'The Girl with the Dragon Tattoo', 'Larsson', 'Stieg', 'C3', 'SHELF', 'C3');
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'The Girl Who Played with Fire', 'Larsson', 'Stieg', 'C3', 'SHELF', 'C3');
+INSERT INTO library.book_locations (book_id, title, author_surname, author_first_name, assigned_shelf_label, current_location_type, current_location_id) 
+VALUES (uuid(), 'The Girl Who Kicked the Hornets'' Nest', 'Larsson', 'Stieg', 'C3', 'SHELF', 'C3');
