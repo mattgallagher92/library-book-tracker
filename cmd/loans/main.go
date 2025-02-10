@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
-	"github.com/mattgallagher92/library-book-tracker/gen/loans/v1"
+	loansv1 "github.com/mattgallagher92/library-book-tracker/proto/loans/v1"
 	"github.com/mattgallagher92/library-book-tracker/internal/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
