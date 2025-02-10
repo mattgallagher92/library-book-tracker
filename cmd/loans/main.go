@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net"
+	"os"
 	"time"
 
 	"github.com/gocql/gocql"
@@ -12,6 +13,7 @@ import (
 	"github.com/mattgallagher92/library-book-tracker/internal/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 )
 
@@ -164,6 +166,12 @@ func main() {
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
+	}
+
+	// Enable reflection in development mode
+	if os.Getenv("ENV") != "production" {
+		reflection.Register(server)
+		log.Println("gRPC reflection enabled for development")
 	}
 
 	log.Printf("Server listening on :50051")

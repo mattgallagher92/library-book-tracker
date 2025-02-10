@@ -41,3 +41,24 @@ make migrate-down
 ```
 
 Both commands will ensure the keyspace exists before proceeding.
+
+### Testing gRPC Endpoints
+
+For local development, you can use `grpcurl` to test the gRPC endpoints. First, install it:
+
+```sh
+go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
+```
+
+List available services:
+```sh
+grpcurl -plaintext localhost:50051 list
+```
+
+Borrow a book (replace UUIDs with valid values):
+```sh
+grpcurl -plaintext -d '{"borrower_id": "123e4567-e89b-12d3-a456-426614174000", "book_id": "987fcdeb-51d3-12d3-a456-426614174000"}' \
+    localhost:50051 loans.v1.LoansService/BorrowBook
+```
+
+Note: gRPC reflection is enabled by default in development mode to support these commands. In production, reflection is disabled for security.
