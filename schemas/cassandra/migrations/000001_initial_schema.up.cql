@@ -26,10 +26,16 @@ CREATE TABLE IF NOT EXISTS library.book_locations (
     assigned_shelf_label text,
     current_location_type text,
     current_location_id text,
-    PRIMARY KEY (book_id, author_surname, author_first_name, title)
+    PRIMARY KEY (book_id)
 );
 
 -- Indexes for book_locations
+CREATE INDEX IF NOT EXISTS book_locations_author_surname_idx
+    ON library.book_locations (author_surname)
+    USING 'sai';
+CREATE INDEX IF NOT EXISTS book_locations_author_first_name_idx
+    ON library.book_locations (author_first_name)
+    USING 'sai';
 CREATE INDEX IF NOT EXISTS book_locations_title_idx
     ON library.book_locations (title)
     USING 'sai';
