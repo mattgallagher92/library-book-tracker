@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
+	"github.com/mattgallagher92/library-book-tracker/internal/config"
 )
 
 // BorrowBookCommand represents the input for borrowing a book
