@@ -22,6 +22,7 @@
       ];
 
       shellHook = ''
+        make --version | head -n 1
         go version
         docker --version
         cqlsh --version
