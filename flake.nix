@@ -19,6 +19,9 @@
         docker
         gnumake
         cassandra
+        protobuf
+        protoc-gen-go
+        protoc-gen-go-grpc
       ];
 
       shellHook = ''
@@ -26,6 +29,9 @@
         go version
         docker --version
         cqlsh --version
+        protoc --version
+        protoc-gen-go --version
+        protoc-gen-go-grpc --version
       '';
     };
   };
