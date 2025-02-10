@@ -22,6 +22,7 @@
         protobuf
         protoc-gen-go
         protoc-gen-go-grpc
+        grpcurl
       ];
 
       shellHook = ''
@@ -32,6 +33,7 @@
         protoc --version
         protoc-gen-go --version
         protoc-gen-go-grpc --version
+        grpcurl --version
       '';
     };
   };

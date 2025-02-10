@@ -22,6 +22,14 @@ More details are available in [the specification](./docs/spec.md).
 
 ## Local development
 
+### Install required tools
+
+```sh
+nix develop
+```
+
+### Background services
+
 Start background services, such as Cassandra, with
 
 ```sh
@@ -44,11 +52,7 @@ Both commands will ensure the keyspace exists before proceeding.
 
 ### Testing gRPC Endpoints
 
-For local development, you can use `grpcurl` to test the gRPC endpoints. First, install it:
-
-```sh
-go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
-```
+For local development, you can use `grpcurl` to test the gRPC endpoints.
 
 List available services:
 ```sh
@@ -57,7 +61,7 @@ grpcurl -plaintext localhost:50051 list
 
 Borrow a book (replace UUIDs with valid values):
 ```sh
-grpcurl -plaintext -d '{"borrower_id": "123e4567-e89b-12d3-a456-426614174000", "book_id": "987fcdeb-51d3-12d3-a456-426614174000"}' \
+grpcurl -plaintext -d '{"borrower_id": "08a5a2d0-a062-4e38-b9da-d328e5fc4a12", "book_id": "2a161877-ba45-4ce3-bbeb-1a279116a723"}' \
     localhost:50051 loans.v1.LoansService/BorrowBook
 ```
 
