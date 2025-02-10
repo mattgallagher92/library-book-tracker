@@ -49,21 +49,35 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 		cmd.BorrowerID, cmd.BookID,
 	)
 
+	// Get borrower info
+	var borrowerName, borrowerEmail string
+	if err := session.Query(
+		`SELECT name, email_address FROM borrower WHERE id = ?`,
+		cmd.BorrowerID,
+	).Scan(&borrowerName, &borrowerEmail); err != nil {
+		return err
+	}
+
+	// Get book info
+	var bookTitle, authorFirstName, authorSurname string
+	if err := session.Query(
+		`SELECT title, author_first_name, author_surname FROM book_locations WHERE book_id = ?`,
+		cmd.BookID,
+	).Scan(&bookTitle, &authorFirstName, &authorSurname); err != nil {
+		return err
+	}
+
 	// Create loan record
 	dueDate := time.Now().AddDate(0, 0, 7) // 1 week loan duration
 	batch.Query(
 		`INSERT INTO loans (
-			borrower_id, due_date, book_id, 
-			borrower_name, borrower_email, 
+			borrower_id, due_date, book_id,
+			borrower_name, borrower_email,
 			book_title, book_author
-		) 
-		SELECT ?, ?, ?,
-		       b.name, b.email_address,
-		       bl.title, CONCAT(bl.author_first_name, ' ', bl.author_surname)
-		FROM borrower b, book_locations bl
-		WHERE b.id = ? AND bl.book_id = ?`,
+		) VALUES (?, ?, ?, ?, ?, ?, ?)`,
 		cmd.BorrowerID, dueDate, cmd.BookID,
-		cmd.BorrowerID, cmd.BookID,
+		borrowerName, borrowerEmail,
+		bookTitle, authorFirstName+" "+authorSurname,
 	)
 
 	// Execute all updates atomically
