@@ -89,6 +89,25 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 }
 
 func main() {
-	// TODO: Initialize Cassandra session and handle requests
 	log.Println("Loans service starting...")
+
+	// Load configuration
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
+	}
+
+	// Initialize Cassandra cluster config
+	cluster := gocql.NewCluster(cfg.CassandraHosts...)
+	cluster.Keyspace = cfg.Keyspace
+	cluster.Consistency = gocql.Quorum
+
+	// Create session
+	session, err := cluster.CreateSession()
+	if err != nil {
+		log.Fatalf("Failed to create Cassandra session: %v", err)
+	}
+	defer session.Close()
+
+	log.Println("Connected to Cassandra successfully")
 }
