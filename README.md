@@ -43,7 +43,7 @@ To run the migrations:
 make migrate-up
 ```
 
-To rollback migrations:
+To roll back migrations:
 ```sh
 make migrate-down
 ```
