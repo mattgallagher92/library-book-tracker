@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package loans.v1;
+
+option go_package = "github.com/mattgallagher92/library-book-tracker/gen/loans/v1;loansv1";
+
+// LoansService handles book loan operations
+service LoansService {
+  // BorrowBook creates a new loan for a book
+  rpc BorrowBook(BorrowBookRequest) returns (BorrowBookResponse);
+}
+
+// BorrowBookRequest contains the details needed to borrow a book
+message BorrowBookRequest {
+  string borrower_id = 1; // UUID
+  string book_id = 2;     // UUID
+}
+
+// BorrowBookResponse confirms the loan was created
+message BorrowBookResponse {
+  string due_date = 1; // ISO-8601 formatted date
+}

@@ -1,12 +1,18 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"log"
+	"net"
 	"time"
 
 	"github.com/gocql/gocql"
+	"github.com/mattgallagher92/library-book-tracker/gen/loans/v1"
 	"github.com/mattgallagher92/library-book-tracker/internal/config"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // BorrowBookCommand represents the input for borrowing a book
@@ -89,6 +95,42 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 	return nil
 }
 
+// loansServer implements the LoansService gRPC service
+type loansServer struct {
+	loansv1.UnimplementedLoansServiceServer
+	session *gocql.Session
+}
+
+// BorrowBook implements the gRPC method for borrowing a book
+func (s *loansServer) BorrowBook(ctx context.Context, req *loansv1.BorrowBookRequest) (*loansv1.BorrowBookResponse, error) {
+	borrowerID, err := gocql.ParseUUID(req.BorrowerId)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid borrower ID: %v", err)
+	}
+
+	bookID, err := gocql.ParseUUID(req.BookId)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid book ID: %v", err)
+	}
+
+	cmd := BorrowBookCommand{
+		BorrowerID: borrowerID,
+		BookID:     bookID,
+	}
+
+	if err := handleBorrowBook(s.session, cmd); err != nil {
+		if err == ErrTooManyBooksCheckedOut {
+			return nil, status.Error(codes.FailedPrecondition, err.Error())
+		}
+		return nil, status.Errorf(codes.Internal, "failed to borrow book: %v", err)
+	}
+
+	dueDate := time.Now().AddDate(0, 0, 7).Format(time.RFC3339)
+	return &loansv1.BorrowBookResponse{
+		DueDate: dueDate,
+	}, nil
+}
+
 func main() {
 	log.Println("Loans service starting...")
 
@@ -111,4 +153,21 @@ func main() {
 	defer session.Close()
 
 	log.Println("Connected to Cassandra successfully")
+
+	// Create gRPC server
+	server := grpc.NewServer()
+	loansv1.RegisterLoansServiceServer(server, &loansServer{
+		session: session,
+	})
+
+	// Start listening for gRPC requests
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
+
+	log.Printf("Server listening on :50051")
+	if err := server.Serve(lis); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
+	}
 }
