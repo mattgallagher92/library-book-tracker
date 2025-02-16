@@ -64,7 +64,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 		SET current_location_type = 'checked_out', 
 		    current_location_id = ? 
 		WHERE book_id = ?`,
-		cmd.BorrowerID, cmd.BookID,
+		cmd.BorrowerID.String(), cmd.BookID,
 	)
 	log.Printf("Added book location update to batch for %s to checked out with %s", cmd.BookID, cmd.BorrowerID)
 
