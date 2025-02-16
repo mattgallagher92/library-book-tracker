@@ -35,7 +35,11 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 		`SELECT checked_out_books FROM borrower_book_count WHERE id = ?`,
 		cmd.BorrowerID,
 	).Scan(&checkedOutBooks); err != nil {
-		return err
+		if err == gocql.ErrNotFound {
+			checkedOutBooks = 0
+		} else {
+			return err
+		}
 	}
 	log.Printf("Borrower %s currently has %d books checked out", cmd.BorrowerID, checkedOutBooks)
 
