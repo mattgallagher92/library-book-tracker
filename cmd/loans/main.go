@@ -108,6 +108,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 
 	// Execute all updates atomically
 	if err := session.ExecuteBatch(batch); err != nil {
+		// TODO: in this case the earlier counter increment should be reverted.
 		log.Printf("Failed to execute batch for book %s and borrower %s: %v", cmd.BookID, cmd.BorrowerID, err)
 		return err
 	}
