@@ -48,15 +48,18 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 		return ErrTooManyBooksCheckedOut
 	}
 
-	// Create batch of updates
-	batch := session.NewBatch(gocql.LoggedBatch)
-
-	// Update borrower's checked out book count
-	batch.Query(
+	// Increment checked out books counter
+	if err := session.Query(
 		`UPDATE borrower_book_count SET checked_out_books = checked_out_books + 1 WHERE id = ?`,
 		cmd.BorrowerID,
-	)
-	log.Printf("Added checked_out_books increment to batch for borrower %s", cmd.BorrowerID)
+	).Exec(); err != nil {
+		log.Printf("Failed to increment checked_out_books for borrower %s: %v", cmd.BorrowerID, err)
+		return err
+	}
+	log.Printf("Incremented checked_out_books for borrower %s", cmd.BorrowerID)
+
+	// Create batch for remaining updates
+	batch := session.NewBatch(gocql.LoggedBatch)
 
 	// Update book location
 	batch.Query(
