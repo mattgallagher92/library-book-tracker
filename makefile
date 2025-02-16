@@ -1,11 +1,14 @@
 .PHONY: wait-for-cassandra init-keyspace migrate-up migrate-down
 
-wait-for-cassandra:
+start-docker-services:
+	docker compose up -d
+
+wait-for-cassandra: start-docker-services
 	until cqlsh localhost 9042 -e "describe keyspaces;" > /dev/null 2>&1; do \
 	  echo "Cassandra is unavailable - sleeping"; \
 	  sleep 1; \
 	done
-	echo "Cassandra is up - executing migrations"
+	echo "Cassandra is up"
 
 init-keyspace: wait-for-cassandra
 	cqlsh -e "CREATE KEYSPACE IF NOT EXISTS library WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};"
@@ -22,4 +25,9 @@ seed-up: migrate-up
 
 seed-down: init-keyspace
 	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds down
+
+run-loans-service: wait-for-cassandra
+	export CASSANDRA_HOSTS=localhost && \
+	export CASSANDRA_KEYSPACE=library && \
+	go run cmd/loans/main.go
 

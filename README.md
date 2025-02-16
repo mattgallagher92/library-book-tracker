@@ -28,27 +28,20 @@ More details are available in [the specification](./docs/spec.md).
 nix develop
 ```
 
-### Background services
+### Run common tasks
 
-Start background services, such as Cassandra, with
+`./makefile` contains targets for various development tasks, including:
+
+- Starting docker services defined in `./docker-compose.yml`
+- Migrating the local database with migrations in `./schemas/cassandra/migrations/`
+- Seeding the local database with scripts in `./schemas/cassandra/seeds/`
+- Running services written in Go, such as the one defined in `./cmd/loans/main.go`
+
+Run targets using, `make <target-name>`. For example, the following command starts the loans service:
 
 ```sh
-docker compose up -d
+make run-loans-service
 ```
-
-### Database Migrations
-
-To run the migrations:
-```sh
-make migrate-up
-```
-
-To roll back migrations:
-```sh
-make migrate-down
-```
-
-Both commands will ensure the keyspace exists before proceeding.
 
 ### Testing gRPC Endpoints
 
