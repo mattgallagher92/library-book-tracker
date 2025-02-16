@@ -46,14 +46,13 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 
 	// Create batch of updates
 	batch := session.NewBatch(gocql.LoggedBatch)
-	log.Printf("Created new batch for database updates")
 
 	// Update borrower's checked out book count
 	batch.Query(
 		`UPDATE borrower_book_count SET checked_out_books = checked_out_books + 1 WHERE id = ?`,
 		cmd.BorrowerID,
 	)
-	log.Printf("Added borrower book count update to batch")
+	log.Printf("Added checked_out_books increment to batch for borrower %s", cmd.BorrowerID)
 
 	// Update book location
 	batch.Query(
@@ -63,7 +62,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 		WHERE book_id = ?`,
 		cmd.BorrowerID, cmd.BookID,
 	)
-	log.Printf("Added book location update to batch")
+	log.Printf("Added book location update to batch for %s to checked out with %s", cmd.BookID, cmd.BorrowerID)
 
 	// Get borrower info
 	var borrowerName, borrowerEmail string
@@ -73,7 +72,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 	).Scan(&borrowerName, &borrowerEmail); err != nil {
 		return err
 	}
-	log.Printf("Retrieved borrower details for %s: %s", cmd.BorrowerID, borrowerName)
+	log.Printf("Retrieved borrower details for %s", cmd.BorrowerID)
 
 	// Get book info
 	var bookTitle, authorFirstName, authorSurname string
@@ -83,7 +82,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 	).Scan(&bookTitle, &authorFirstName, &authorSurname); err != nil {
 		return err
 	}
-	log.Printf("Retrieved book details for %s: %s by %s %s", cmd.BookID, bookTitle, authorFirstName, authorSurname)
+	log.Printf("Retrieved book details for %s", cmd.BookID)
 
 	// Create loan record
 	dueDate := time.Now().AddDate(0, 0, 7) // 1 week loan duration
@@ -97,11 +96,12 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 		borrowerName, borrowerEmail,
 		bookTitle, authorFirstName+" "+authorSurname,
 	)
-	log.Printf("Added loan record creation to batch with due date %s", dueDate.Format(time.RFC3339))
+	log.Printf("Added loan record creation to batch for book %s and borrower %s with due date %s",
+		cmd.BookID, cmd.BorrowerID, dueDate.Format(time.RFC3339))
 
 	// Execute all updates atomically
 	if err := session.ExecuteBatch(batch); err != nil {
-		log.Printf("Failed to execute batch: %v", err)
+		log.Printf("Failed to execute batch for book %s and borrower %s: %v", cmd.BookID, cmd.BorrowerID, err)
 		return err
 	}
 	log.Printf("Successfully completed borrow book process for borrower %s and book %s", cmd.BorrowerID, cmd.BookID)
