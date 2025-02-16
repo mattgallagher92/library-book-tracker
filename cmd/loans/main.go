@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
-	loansv1 "github.com/mattgallagher92/library-book-tracker/proto/loans/v1"
 	"github.com/mattgallagher92/library-book-tracker/internal/config"
+	loansv1 "github.com/mattgallagher92/library-book-tracker/proto/loans/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
@@ -27,6 +27,8 @@ type BorrowBookCommand struct {
 var ErrTooManyBooksCheckedOut = errors.New("borrower has reached maximum number of checked out books")
 
 func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
+	log.Printf("Starting borrow book process for borrower %s and book %s", cmd.BorrowerID, cmd.BookID)
+
 	// First check if borrower can take out more books
 	var checkedOutBooks int
 	if err := session.Query(
@@ -35,19 +37,23 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 	).Scan(&checkedOutBooks); err != nil {
 		return err
 	}
+	log.Printf("Borrower %s currently has %d books checked out", cmd.BorrowerID, checkedOutBooks)
 
 	if checkedOutBooks >= 2 {
+		log.Printf("Borrower %s has reached maximum number of books (2)", cmd.BorrowerID)
 		return ErrTooManyBooksCheckedOut
 	}
 
 	// Create batch of updates
 	batch := session.NewBatch(gocql.LoggedBatch)
+	log.Printf("Created new batch for database updates")
 
 	// Update borrower's checked out book count
 	batch.Query(
 		`UPDATE borrower_book_count SET checked_out_books = checked_out_books + 1 WHERE id = ?`,
 		cmd.BorrowerID,
 	)
+	log.Printf("Added borrower book count update to batch")
 
 	// Update book location
 	batch.Query(
@@ -57,6 +63,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 		WHERE book_id = ?`,
 		cmd.BorrowerID, cmd.BookID,
 	)
+	log.Printf("Added book location update to batch")
 
 	// Get borrower info
 	var borrowerName, borrowerEmail string
@@ -66,6 +73,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 	).Scan(&borrowerName, &borrowerEmail); err != nil {
 		return err
 	}
+	log.Printf("Retrieved borrower details for %s: %s", cmd.BorrowerID, borrowerName)
 
 	// Get book info
 	var bookTitle, authorFirstName, authorSurname string
@@ -75,6 +83,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 	).Scan(&bookTitle, &authorFirstName, &authorSurname); err != nil {
 		return err
 	}
+	log.Printf("Retrieved book details for %s: %s by %s %s", cmd.BookID, bookTitle, authorFirstName, authorSurname)
 
 	// Create loan record
 	dueDate := time.Now().AddDate(0, 0, 7) // 1 week loan duration
@@ -88,11 +97,14 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 		borrowerName, borrowerEmail,
 		bookTitle, authorFirstName+" "+authorSurname,
 	)
+	log.Printf("Added loan record creation to batch with due date %s", dueDate.Format(time.RFC3339))
 
 	// Execute all updates atomically
 	if err := session.ExecuteBatch(batch); err != nil {
+		log.Printf("Failed to execute batch: %v", err)
 		return err
 	}
+	log.Printf("Successfully completed borrow book process for borrower %s and book %s", cmd.BorrowerID, cmd.BookID)
 
 	return nil
 }
