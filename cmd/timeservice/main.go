@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	loansv1 "github.com/mattgallagher92/library-book-tracker/proto/loans/v1"
-	timev1 "github.com/mattgallagher92/library-book-tracker/gen/time/v1"
+	timev1 "github.com/mattgallagher92/library-book-tracker/proto/time/v1"
 )
 
 type timeServer struct {
