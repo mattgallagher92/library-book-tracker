@@ -26,6 +26,9 @@ seed-up: migrate-up
 seed-down: init-keyspace
 	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds down
 
+regenerate-proto-go-code:
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/loans/v1/loans.proto
+
 run-loans-service: wait-for-cassandra
 	export CASSANDRA_HOSTS=localhost && \
 	export CASSANDRA_KEYSPACE=library && \
