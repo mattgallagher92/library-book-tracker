@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
-	timeProvider "github.com/mattgallagher92/library-book-tracker/internal/time"
 	"github.com/mattgallagher92/library-book-tracker/internal/config"
+	timeProvider "github.com/mattgallagher92/library-book-tracker/internal/time"
 	loansv1 "github.com/mattgallagher92/library-book-tracker/proto/loans/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -190,13 +190,15 @@ func main() {
 	}
 	defer session.Close()
 
-	log.Println("Connected to Cassandra successfully")
+	log.Println("Connected to Cassandra")
 
 	// Initialize time provider
 	var tp timeProvider.Provider
 	if os.Getenv("SIMULATE_TIME") == "true" {
+		log.Println("Using simulated time")
 		tp = timeProvider.NewSimulatedProvider(time.Now())
 	} else {
+		log.Println("Using actual system time")
 		tp = &timeProvider.RealProvider{}
 	}
 
