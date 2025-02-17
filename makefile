@@ -37,3 +37,9 @@ run-loans-service: wait-for-cassandra
 
 run-time-service:
 	go run cmd/timeservice/main.go
+
+advance-time-one-hour:
+	grpcurl -plaintext -d '{"seconds": 3600}' localhost:50052 time.v1.TimeService/AdvanceBy
+
+advance-time-one-day:
+	grpcurl -plaintext -d '{"seconds": 86400}' localhost:50052 time.v1.TimeService/AdvanceBy
