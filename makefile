@@ -8,7 +8,7 @@ wait-for-cassandra: start-docker-services
 	  echo "Cassandra is unavailable - sleeping"; \
 	  sleep 1; \
 	done
-	echo "Cassandra is up"
+	@echo "Cassandra is up"
 
 init-keyspace: wait-for-cassandra
 	cqlsh -e "CREATE KEYSPACE IF NOT EXISTS library WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};"
