@@ -38,6 +38,11 @@ run-loans-service: wait-for-cassandra
 run-time-service:
 	go run cmd/timeservice/main.go
 
+set-time:
+	@echo "Enter timestamp in RFC3339 format (e.g., 2024-01-01T00:00:00Z):"
+	@read -p "> " timestamp; \
+	grpcurl -plaintext -d "{\"timestamp\": \"$$timestamp\"}" localhost:50052 time.v1.TimeService/SetTime
+
 advance-time-one-hour:
 	grpcurl -plaintext -d '{"seconds": 3600}' localhost:50052 time.v1.TimeService/AdvanceBy
 
