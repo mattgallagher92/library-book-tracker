@@ -10,9 +10,17 @@ This repo contains the code for an application whose main purpose is for me to e
 - Apache Kafka
 - Envoy Proxy
 
-The features of the application are secondary, so I'm happy for the architecture to be massively over-engineered for the actual problem domain (which it is). I want an architecture that fits well with the above technologies and am willing to pay the complexity cost, even though the availability and scalability that they provide is unlikely to be necessary without an extremely large user base.
+The features and correctness of the application are secondary.
+
+### Overengineering
+
+Since features are secondary, I'm happy for the architecture to be massively over-engineered for the actual problem domain (which it is). I want an architecture that fits well with the above technologies and am willing to pay the complexity cost, even though the availability and scalability that they provide is unlikely to be necessary without an extremely large user base.
 
 Nevertheless, I have tried to choose a problem domain for which a service-oriented architecture with asynchronous message passing makes sense, since most of the above technologies are only really useful in that setting.
+
+### Incomplete command validation
+
+Because this repo is about learning technologies, I've decided not to worry about handling all possible error cases; for example, there is no check when borrowing a book that the book isn't already borrowed by somebody else. Handling all error cases would be time consuming and wouldn't teach me more about the tech that I'm interested in.
 
 ## Problem description
 
