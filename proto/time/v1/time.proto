@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package time.v1;
+
+option go_package = "github.com/mattgallagher92/library-book-tracker/gen/time/v1;timev1";
+
+// TimeService handles simulated time coordination across services
+service TimeService {
+  // SetTime updates the simulated time across all registered clients
+  rpc SetTime(SetTimeRequest) returns (SetTimeResponse);
+  
+  // AdvanceBy advances time by the specified duration across all clients
+  rpc AdvanceBy(AdvanceByRequest) returns (AdvanceByResponse);
+}
+
+message SetTimeRequest {
+  string timestamp = 1;   // RFC3339 formatted
+}
+
+message SetTimeResponse {}
+
+message AdvanceByRequest {
+  int64 seconds = 1;
+}
+
+message AdvanceByResponse {
+  string new_timestamp = 1; // RFC3339 formatted
+}
