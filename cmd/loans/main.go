@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
+	timeProvider "github.com/mattgallagher92/library-book-tracker/internal/time"
 	"github.com/mattgallagher92/library-book-tracker/internal/config"
 	loansv1 "github.com/mattgallagher92/library-book-tracker/proto/loans/v1"
 	"google.golang.org/grpc"
@@ -26,7 +27,7 @@ type BorrowBookCommand struct {
 // ErrTooManyBooksCheckedOut indicates the borrower has reached their limit
 var ErrTooManyBooksCheckedOut = errors.New("borrower has reached maximum number of checked out books")
 
-func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) (time.Time, error) {
+func handleBorrowBook(session *gocql.Session, provider timeProvider.Provider, cmd BorrowBookCommand) (time.Time, error) {
 	log.Printf("Starting borrow book process for borrower %s and book %s", cmd.BorrowerID, cmd.BookID)
 
 	// First check if borrower can take out more books
@@ -92,7 +93,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) (time.Time,
 	log.Printf("Retrieved book details for %s", cmd.BookID)
 
 	// Create loan record
-	now := time.Now()
+	now := provider.Now()
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	dueDate := today.AddDate(0, 0, 7) // 1 week loan duration
 	batch.Query(
@@ -122,10 +123,23 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) (time.Time,
 // loansServer implements the LoansService gRPC service
 type loansServer struct {
 	loansv1.UnimplementedLoansServiceServer
-	session *gocql.Session
+	session      *gocql.Session
+	timeProvider timeProvider.Provider
 }
 
 // BorrowBook implements the gRPC method for borrowing a book
+func (s *loansServer) UpdateSimulatedTime(ctx context.Context, req *loansv1.UpdateSimulatedTimeRequest) (*loansv1.UpdateSimulatedTimeResponse, error) {
+	if provider, ok := s.timeProvider.(*timeProvider.SimulatedProvider); ok {
+		t, err := time.Parse(time.RFC3339, req.Timestamp)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid timestamp format: %v", err)
+		}
+		provider.SetTime(t)
+		return &loansv1.UpdateSimulatedTimeResponse{}, nil
+	}
+	return nil, status.Error(codes.FailedPrecondition, "time simulation not enabled")
+}
+
 func (s *loansServer) BorrowBook(ctx context.Context, req *loansv1.BorrowBookRequest) (*loansv1.BorrowBookResponse, error) {
 	borrowerID, err := gocql.ParseUUID(req.BorrowerId)
 	if err != nil {
@@ -142,7 +156,7 @@ func (s *loansServer) BorrowBook(ctx context.Context, req *loansv1.BorrowBookReq
 		BookID:     bookID,
 	}
 
-	dueDate, err := handleBorrowBook(s.session, cmd)
+	dueDate, err := handleBorrowBook(s.session, s.timeProvider, cmd)
 	if err != nil {
 		if err == ErrTooManyBooksCheckedOut {
 			return nil, status.Error(codes.FailedPrecondition, err.Error())
@@ -178,10 +192,19 @@ func main() {
 
 	log.Println("Connected to Cassandra successfully")
 
+	// Initialize time provider
+	var tp timeProvider.Provider
+	if os.Getenv("SIMULATE_TIME") == "true" {
+		tp = timeProvider.NewSimulatedProvider(time.Now())
+	} else {
+		tp = &timeProvider.RealProvider{}
+	}
+
 	// Create gRPC server
 	server := grpc.NewServer()
 	loansv1.RegisterLoansServiceServer(server, &loansServer{
-		session: session,
+		session:      session,
+		timeProvider: tp,
 	})
 
 	// Start listening for gRPC requests
