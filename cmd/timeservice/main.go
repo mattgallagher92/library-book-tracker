@@ -15,20 +15,28 @@ import (
 type timeServer struct {
 	timev1.UnimplementedTimeServiceServer
 	loansClient loansv1.LoansServiceClient
+	currentTime time.Time
 }
 
 func (s *timeServer) SetTime(ctx context.Context, req *timev1.SetTimeRequest) (*timev1.SetTimeResponse, error) {
-	_, err := s.loansClient.UpdateSimulatedTime(ctx, &loansv1.UpdateSimulatedTimeRequest{
+	t, err := time.Parse(time.RFC3339, req.Timestamp)
+	if err != nil {
+		return nil, err
+	}
+	
+	_, err = s.loansClient.UpdateSimulatedTime(ctx, &loansv1.UpdateSimulatedTimeRequest{
 		Timestamp: req.Timestamp,
 	})
 	if err != nil {
 		return nil, err
 	}
+	
+	s.currentTime = t
 	return &timev1.SetTimeResponse{}, nil
 }
 
 func (s *timeServer) AdvanceBy(ctx context.Context, req *timev1.AdvanceByRequest) (*timev1.AdvanceByResponse, error) {
-	newTime := time.Now().Add(time.Duration(req.Seconds) * time.Second)
+	newTime := s.currentTime.Add(time.Duration(req.Seconds) * time.Second)
 	timestamp := newTime.Format(time.RFC3339)
 	
 	_, err := s.SetTime(ctx, &timev1.SetTimeRequest{Timestamp: timestamp})
@@ -56,7 +64,8 @@ func main() {
 	// Create and start server
 	server := grpc.NewServer()
 	timev1.RegisterTimeServiceServer(server, &timeServer{
-		loansClient: loansClient,
+		loansClient:  loansClient,
+		currentTime:  time.Now(),
 	})
 
 	lis, err := net.Listen("tcp", ":50052")
