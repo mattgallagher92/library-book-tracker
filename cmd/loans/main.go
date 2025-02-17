@@ -26,7 +26,7 @@ type BorrowBookCommand struct {
 // ErrTooManyBooksCheckedOut indicates the borrower has reached their limit
 var ErrTooManyBooksCheckedOut = errors.New("borrower has reached maximum number of checked out books")
 
-func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
+func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) (time.Time, error) {
 	log.Printf("Starting borrow book process for borrower %s and book %s", cmd.BorrowerID, cmd.BookID)
 
 	// First check if borrower can take out more books
@@ -38,14 +38,14 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 		if err == gocql.ErrNotFound {
 			checkedOutBooks = 0
 		} else {
-			return err
+			return time.Time{}, err
 		}
 	}
 	log.Printf("Borrower %s currently has %d books checked out", cmd.BorrowerID, checkedOutBooks)
 
 	if checkedOutBooks >= 2 {
 		log.Printf("Borrower %s has reached maximum number of books (2)", cmd.BorrowerID)
-		return ErrTooManyBooksCheckedOut
+		return time.Time{}, ErrTooManyBooksCheckedOut
 	}
 
 	// Increment checked out books counter
@@ -54,7 +54,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 		cmd.BorrowerID,
 	).Exec(); err != nil {
 		log.Printf("Failed to increment checked_out_books for borrower %s: %v", cmd.BorrowerID, err)
-		return err
+		return time.Time{}, err
 	}
 	log.Printf("Incremented checked_out_books for borrower %s", cmd.BorrowerID)
 
@@ -77,7 +77,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 		`SELECT name, email_address FROM borrower WHERE id = ?`,
 		cmd.BorrowerID,
 	).Scan(&borrowerName, &borrowerEmail); err != nil {
-		return err
+		return time.Time{}, err
 	}
 	log.Printf("Retrieved borrower details for %s", cmd.BorrowerID)
 
@@ -87,7 +87,7 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 		`SELECT title, author_first_name, author_surname FROM book_locations WHERE book_id = ?`,
 		cmd.BookID,
 	).Scan(&bookTitle, &authorFirstName, &authorSurname); err != nil {
-		return err
+		return time.Time{}, err
 	}
 	log.Printf("Retrieved book details for %s", cmd.BookID)
 
@@ -110,11 +110,11 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) error {
 	if err := session.ExecuteBatch(batch); err != nil {
 		// TODO: in this case the earlier counter increment should be reverted.
 		log.Printf("Failed to execute batch for book %s and borrower %s: %v", cmd.BookID, cmd.BorrowerID, err)
-		return err
+		return time.Time{}, err
 	}
 	log.Printf("Successfully completed borrow book process for borrower %s and book %s", cmd.BorrowerID, cmd.BookID)
 
-	return nil
+	return dueDate, nil
 }
 
 // loansServer implements the LoansService gRPC service
@@ -140,16 +140,16 @@ func (s *loansServer) BorrowBook(ctx context.Context, req *loansv1.BorrowBookReq
 		BookID:     bookID,
 	}
 
-	if err := handleBorrowBook(s.session, cmd); err != nil {
+	dueDate, err := handleBorrowBook(s.session, cmd)
+	if err != nil {
 		if err == ErrTooManyBooksCheckedOut {
 			return nil, status.Error(codes.FailedPrecondition, err.Error())
 		}
 		return nil, status.Errorf(codes.Internal, "failed to borrow book: %v", err)
 	}
 
-	dueDate := time.Now().AddDate(0, 0, 7).Format(time.RFC3339)
 	return &loansv1.BorrowBookResponse{
-		DueDate: dueDate,
+		DueDate: dueDate.Format(time.RFC3339),
 	}, nil
 }
 
