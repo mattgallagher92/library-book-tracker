@@ -22,7 +22,7 @@ func (c *TimeCoordinator) SetTime(t time.Time) error {
 		Timestamp: t.Format(time.RFC3339),
 	}
 	
-	for _, client := range clients {
+	for _, client := range c.clients {
 		if _, err := client.UpdateSimulatedTime(context.Background(), req); err != nil {
 			return err
 		}
