@@ -92,7 +92,9 @@ func handleBorrowBook(session *gocql.Session, cmd BorrowBookCommand) (time.Time,
 	log.Printf("Retrieved book details for %s", cmd.BookID)
 
 	// Create loan record
-	dueDate := time.Now().AddDate(0, 0, 7) // 1 week loan duration
+	now := time.Now()
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	dueDate := today.AddDate(0, 0, 7) // 1 week loan duration
 	batch.Query(
 		`INSERT INTO loans (
 			borrower_id, due_date, book_id,
