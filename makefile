@@ -59,6 +59,9 @@ advance-time-one-hour:
 advance-time-one-day:
 	grpcurl -plaintext -d '{"seconds": 86400}' localhost:50052 time.v1.TimeService/AdvanceBy
 
+show-book-locations:
+	watch -n 1 "cqlsh -e 'SELECT * FROM library.book_locations;'"
+
 borrow-book:
 	@read -p "borrower_id (e.g. 08a5a2d0-a062-4e38-b9da-d328e5fc4a12): " borrower_id; \
 	read -p "book_id (e.g. 2a161877-ba45-4ce3-bbeb-1a279116a723): " book_id; \
