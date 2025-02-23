@@ -51,10 +51,25 @@ Run targets using, `make <target-name>`. For example, the following command star
 ```sh
 make run-loans-service
 ```
+### Test Kafka
+
+```sh
+docker exec -it library-book-tracker-kafka-1 bash
+```
+
+Then
+
+```sh
+kafka-topics --bootstrap-server localhost:9092 --topic test-topic --create --partitions 1 --replication-factor 1
+kafka-topics --bootstrap-server localhost:9092 --list
+kafka-console-producer --bootstrap-server localhost:9092 --topic test-topic
+kafka-console-consumer --bootstrap-server localhost:9092 --topic test-topic --from-beginning
+kafka-topics --bootstrap-server localhost:9092 --list
+kafka-topics --bootstrap-server localhost:9092 --topic test-topic --delete
+```
 
 ## Development roadmap
 
-- Add Kafka
 - Set up the borrower notification service to publish notifications if a borrower's book is due soon
 - Set up the email service to "send" notification emails (mock implementation that just logs to console)
 - Implement book returns in the loans service
