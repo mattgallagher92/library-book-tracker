@@ -63,3 +63,8 @@ CREATE TABLE IF NOT EXISTS library.loans (
     returned_date timestamp,
     PRIMARY KEY (borrower_id, due_date, book_id)
 );
+
+-- Index for querying loans by due date
+CREATE CUSTOM INDEX IF NOT EXISTS loans_by_due_date 
+ON library.loans(due_date) 
+USING 'StorageAttachedIndex';
