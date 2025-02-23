@@ -30,14 +30,11 @@ type Loan struct {
 
 func checkDueLoans(session *gocql.Session, provider timeProvider.Provider) error {
 	now := provider.Now()
-	twoDaysFromNow := time.Date(
-		now.Year(), now.Month(), now.Day()+2,
-		0, 0, 0, 0,
-		now.Location(),
-	)
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	twoDaysFromNow := today.AddDate(0, 0, 2)
 
 	// Query for loans due in 2 days
-	iter := session.Query(
+	upcomingLoans := session.Query(
 		`SELECT borrower_id, due_date, book_id, 
 		        borrower_name, borrower_email,
 		        book_title, book_author
@@ -47,7 +44,7 @@ func checkDueLoans(session *gocql.Session, provider timeProvider.Provider) error
 	).Iter()
 
 	var loan Loan
-	for iter.Scan(
+	for upcomingLoans.Scan(
 		&loan.BorrowerID, &loan.DueDate, &loan.BookID,
 		&loan.BorrowerName, &loan.BorrowerEmail,
 		&loan.BookTitle, &loan.BookAuthor,
@@ -60,7 +57,7 @@ func checkDueLoans(session *gocql.Session, provider timeProvider.Provider) error
 			loan.DueDate.Format("2006-01-02"))
 	}
 
-	return iter.Close()
+	return upcomingLoans.Close()
 }
 
 type notificationServer struct {
