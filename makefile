@@ -39,14 +39,20 @@ seed-down: init-keyspace
 regenerate-proto-go-code:
 	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/loans/v1/loans.proto proto/time/v1/time.proto
 
+run-time-service:
+	go run cmd/timeservice/main.go
+
 run-loans-service: wait-for-cassandra
 	export SIMULATE_TIME=true && \
 	export CASSANDRA_HOSTS=localhost && \
 	export CASSANDRA_KEYSPACE=library && \
 	go run cmd/loans/main.go
 
-run-time-service:
-	go run cmd/timeservice/main.go
+run-notifications-service:
+	export SIMULATE_TIME=true && \
+	export CASSANDRA_HOSTS=localhost && \
+	export CASSANDRA_KEYSPACE=library && \
+	go run cmd/borrower_notifications/main.go -interval 5
 
 set-time:
 	@echo "Enter timestamp in RFC3339 format (e.g., 2024-01-01T00:00:00Z):"
