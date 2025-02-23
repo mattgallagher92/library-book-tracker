@@ -20,6 +20,9 @@ wait-for-kafka: start-docker-services
 	done
 	@echo "Kafka is up"
 
+init-topics: wait-for-kafka
+	docker exec -it library-book-tracker-kafka-1 kafka-topics --bootstrap-server localhost:9092 --topic book-due-soon-notifications --create --if-not-exists -partitions 1 --replication-factor 1
+
 # NOTE: x-multi-statment breaks the script by semicolons. This will not work if a statement has a semicolon in it.
 migrate-up: init-keyspace
 	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true" -path ./schemas/cassandra/migrations up
