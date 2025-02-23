@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package borrower_notification.v1;
+
+option go_package = "github.com/mattgallagher92/library-book-tracker/gen/borrower_notification/v1;borrowernotificationv1";
+
+// BorrowerNotificationService handles notifications to borrowers
+service BorrowerNotificationService {
+  // UpdateSimulatedTime updates the service's simulated current time
+  rpc UpdateSimulatedTime(UpdateSimulatedTimeRequest) returns (UpdateSimulatedTimeResponse);
+}
+
+// UpdateSimulatedTimeRequest contains the new simulated time
+message UpdateSimulatedTimeRequest {
+  string timestamp = 1; // RFC3339 formatted timestamp
+}
+
+// UpdateSimulatedTimeResponse is empty as the update is synchronous
+message UpdateSimulatedTimeResponse {}
