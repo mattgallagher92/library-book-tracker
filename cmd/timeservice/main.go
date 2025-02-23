@@ -8,14 +8,16 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	borrowernotificationv1 "github.com/mattgallagher92/library-book-tracker/proto/borrower_notification/v1"
 	loansv1 "github.com/mattgallagher92/library-book-tracker/proto/loans/v1"
 	timev1 "github.com/mattgallagher92/library-book-tracker/proto/time/v1"
 )
 
 type timeServer struct {
 	timev1.UnimplementedTimeServiceServer
-	loansClient loansv1.LoansServiceClient
-	currentTime time.Time
+	loansClient              loansv1.LoansServiceClient
+	borrowerNotificationClient borrowernotificationv1.BorrowerNotificationServiceClient
+	currentTime             time.Time
 }
 
 func (s *timeServer) SetTime(ctx context.Context, req *timev1.SetTimeRequest) (*timev1.SetTimeResponse, error) {
@@ -24,13 +26,19 @@ func (s *timeServer) SetTime(ctx context.Context, req *timev1.SetTimeRequest) (*
 		return nil, err
 	}
 	
-	_, err = s.loansClient.UpdateSimulatedTime(ctx, &loansv1.UpdateSimulatedTimeRequest{
+	// Update loans service time
+	if _, err = s.loansClient.UpdateSimulatedTime(ctx, &loansv1.UpdateSimulatedTimeRequest{
 		Timestamp: req.Timestamp,
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, err
 	}
-	
+
+	// Update borrower notifications service time
+	if _, err = s.borrowerNotificationClient.UpdateSimulatedTime(ctx, &borrowernotificationv1.UpdateSimulatedTimeRequest{
+		Timestamp: req.Timestamp,
+	}); err != nil {
+		return nil, err
+	}
 	s.currentTime = t
 	return &timev1.SetTimeResponse{}, nil
 }
@@ -58,14 +66,22 @@ func main() {
 		log.Fatalf("Failed to connect to loans service: %v", err)
 	}
 	defer loansConn.Close()
-	
 	loansClient := loansv1.NewLoansServiceClient(loansConn)
+
+	// Connect to borrower notifications service
+	notificationsConn, err := grpc.Dial("localhost:50053", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Failed to connect to borrower notifications service: %v", err)
+	}
+	defer notificationsConn.Close()
+	notificationsClient := borrowernotificationv1.NewBorrowerNotificationServiceClient(notificationsConn)
 
 	// Create and start server
 	server := grpc.NewServer()
 	timev1.RegisterTimeServiceServer(server, &timeServer{
-		loansClient:  loansClient,
-		currentTime:  time.Now(),
+		loansClient:              loansClient,
+		borrowerNotificationClient: notificationsClient,
+		currentTime:              time.Now(),
 	})
 
 	lis, err := net.Listen("tcp", ":50052")
