@@ -1,4 +1,4 @@
-.PHONY: wait-for-cassandra init-keyspace migrate-up migrate-down
+.PHONY: wait-for-cassandra init-keyspace wait-for-kafka migrate-up migrate-down
 
 start-docker-services:
 	docker compose up -d
@@ -12,6 +12,13 @@ wait-for-cassandra: start-docker-services
 
 init-keyspace: wait-for-cassandra
 	cqlsh -e "CREATE KEYSPACE IF NOT EXISTS library WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};"
+
+wait-for-kafka: start-docker-services
+	until echo "quit" | kafka-topics --bootstrap-server localhost:9092 --list > /dev/null 2>&1; do \
+	  echo "Kafka is unavailable - sleeping"; \
+	  sleep 1; \
+	done
+	@echo "Kafka is up"
 
 # NOTE: x-multi-statment breaks the script by semicolons. This will not work if a statement has a semicolon in it.
 migrate-up: init-keyspace
