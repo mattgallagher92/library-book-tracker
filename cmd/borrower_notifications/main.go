@@ -1,12 +1,19 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
+	"net"
 	"os"
 	"time"
 
 	"github.com/gocql/gocql"
+	borrowernotificationv1 "github.com/mattgallagher92/library-book-tracker/gen/borrower_notification/v1"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 	"github.com/mattgallagher92/library-book-tracker/internal/config"
 	timeProvider "github.com/mattgallagher92/library-book-tracker/internal/time"
 )
@@ -56,8 +63,25 @@ func checkDueLoans(session *gocql.Session, provider timeProvider.Provider) error
 	return iter.Close()
 }
 
+type notificationServer struct {
+	borrowernotificationv1.UnimplementedBorrowerNotificationServiceServer
+	timeProvider timeProvider.Provider
+}
+
+func (s *notificationServer) UpdateSimulatedTime(ctx context.Context, req *borrowernotificationv1.UpdateSimulatedTimeRequest) (*borrowernotificationv1.UpdateSimulatedTimeResponse, error) {
+	if provider, ok := s.timeProvider.(*timeProvider.SimulatedProvider); ok {
+		t, err := time.Parse(time.RFC3339, req.Timestamp)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid timestamp format: %v", err)
+		}
+		provider.SetTime(t)
+		return &borrowernotificationv1.UpdateSimulatedTimeResponse{}, nil
+	}
+	return nil, status.Error(codes.FailedPrecondition, "time simulation not enabled")
+}
+
 func main() {
-	checkInterval := flag.Int("interval", 300, "Interval between checks in seconds")
+	checkInterval := flag.Int("interval", 300, "Interval between checks in seconds") 
 	flag.Parse()
 
 	log.Println("Borrower notification service starting...")
@@ -93,18 +117,47 @@ func main() {
 		tp = &timeProvider.RealProvider{}
 	}
 
-	ticker := time.NewTicker(time.Duration(*checkInterval) * time.Second)
-	defer ticker.Stop()
+	// Create gRPC server
+	server := grpc.NewServer()
+	notificationSrv := &notificationServer{
+		timeProvider: tp,
+	}
+	borrowernotificationv1.RegisterBorrowerNotificationServiceServer(server, notificationSrv)
 
-	// Do an initial check immediately
+	// Start listening for gRPC requests
+	lis, err := net.Listen("tcp", ":50052")
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
+
+	// Enable reflection in development mode
+	if os.Getenv("ENV") != "production" {
+		reflection.Register(server)
+		log.Println("gRPC reflection enabled for development")
+	}
+
+	log.Printf("gRPC server listening on :50052")
+
+	// Start notification checker in a goroutine
+	go func() {
+		ticker := time.NewTicker(time.Duration(*checkInterval) * time.Second)
+		defer ticker.Stop()
+
+		// Do an initial check immediately
 	if err := checkDueLoans(session, tp); err != nil {
 		log.Printf("Error checking due loans: %v", err)
 	}
 
-	// Then check periodically
-	for range ticker.C {
-		if err := checkDueLoans(session, tp); err != nil {
-			log.Printf("Error checking due loans: %v", err)
+		// Then check periodically
+		for range ticker.C {
+			if err := checkDueLoans(session, tp); err != nil {
+				log.Printf("Error checking due loans: %v", err)
+			}
 		}
+	}()
+
+	// Start gRPC server
+	if err := server.Serve(lis); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
 	}
 }
