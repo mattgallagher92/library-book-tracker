@@ -33,6 +33,7 @@ func checkDueLoans(session *gocql.Session, provider timeProvider.Provider) error
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	twoDaysFromNow := today.AddDate(0, 0, 2)
 
+	log.Printf("Checking for loans due on %s", twoDaysFromNow.Format(time.RFC3339))
 	// Query for loans due in 2 days
 	upcomingLoans := session.Query(
 		`SELECT borrower_id, due_date, book_id, 
@@ -42,6 +43,7 @@ func checkDueLoans(session *gocql.Session, provider timeProvider.Provider) error
 		 WHERE due_date = ?`,
 		twoDaysFromNow,
 	).Iter()
+	log.Printf("Found at least %d loans due on %s", upcomingLoans.NumRows(), twoDaysFromNow.Format(time.RFC3339))
 
 	var loan Loan
 	for upcomingLoans.Scan(
