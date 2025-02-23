@@ -125,7 +125,7 @@ func main() {
 	borrowernotificationv1.RegisterBorrowerNotificationServiceServer(server, notificationSrv)
 
 	// Start listening for gRPC requests
-	lis, err := net.Listen("tcp", ":50052")
+	lis, err := net.Listen("tcp", ":50053")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
@@ -136,7 +136,7 @@ func main() {
 		log.Println("gRPC reflection enabled for development")
 	}
 
-	log.Printf("gRPC server listening on :50052")
+	log.Printf("gRPC server listening on :50053")
 
 	// Start notification checker in a goroutine
 	go func() {
