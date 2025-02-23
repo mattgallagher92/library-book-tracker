@@ -37,7 +37,7 @@ seed-down: init-keyspace
 	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds down
 
 regenerate-proto-go-code:
-	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/loans/v1/loans.proto proto/time/v1/time.proto
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/loans/v1/loans.proto proto/time/v1/time.proto proto/borrower_notification/v1/borrower_notification.proto
 
 run-time-service:
 	go run cmd/timeservice/main.go
