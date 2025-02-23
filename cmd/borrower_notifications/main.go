@@ -9,13 +9,13 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
+	"github.com/mattgallagher92/library-book-tracker/internal/config"
+	timeProvider "github.com/mattgallagher92/library-book-tracker/internal/time"
 	borrowernotificationv1 "github.com/mattgallagher92/library-book-tracker/proto/borrower_notification/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
-	"github.com/mattgallagher92/library-book-tracker/internal/config"
-	timeProvider "github.com/mattgallagher92/library-book-tracker/internal/time"
 )
 
 type Loan struct {
@@ -81,7 +81,7 @@ func (s *notificationServer) UpdateSimulatedTime(ctx context.Context, req *borro
 }
 
 func main() {
-	checkInterval := flag.Int("interval", 300, "Interval between checks in seconds") 
+	checkInterval := flag.Int("interval", 300, "Interval between checks in seconds")
 	flag.Parse()
 
 	log.Println("Borrower notification service starting...")
@@ -144,9 +144,9 @@ func main() {
 		defer ticker.Stop()
 
 		// Do an initial check immediately
-	if err := checkDueLoans(session, tp); err != nil {
-		log.Printf("Error checking due loans: %v", err)
-	}
+		if err := checkDueLoans(session, tp); err != nil {
+			log.Printf("Error checking due loans: %v", err)
+		}
 
 		// Then check periodically
 		for range ticker.C {
