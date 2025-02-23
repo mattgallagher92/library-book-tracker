@@ -44,6 +44,7 @@ nix develop
 - Migrating the local database with migrations in `./schemas/cassandra/migrations/`
 - Seeding the local database with scripts in `./schemas/cassandra/seeds/`
 - Running services written in Go, such as the one defined in `./cmd/loans/main.go`
+- Invoking endpoints (via `grpcurl`), such as `BorrowBook`
 
 Run targets using, `make <target-name>`. For example, the following command starts the loans service:
 
@@ -51,19 +52,3 @@ Run targets using, `make <target-name>`. For example, the following command star
 make run-loans-service
 ```
 
-### Testing gRPC Endpoints
-
-For local development, you can use `grpcurl` to test the gRPC endpoints.
-
-List available services:
-```sh
-grpcurl -plaintext localhost:50051 list
-```
-
-Borrow a book (replace UUIDs with valid values):
-```sh
-grpcurl -plaintext -d '{"borrower_id": "08a5a2d0-a062-4e38-b9da-d328e5fc4a12", "book_id": "2a161877-ba45-4ce3-bbeb-1a279116a723"}' \
-    localhost:50051 loans.v1.LoansService/BorrowBook
-```
-
-Note: gRPC reflection is enabled by default in development mode to support these commands. In production, reflection is disabled for security.
