@@ -73,7 +73,6 @@ kafka-topics --bootstrap-server localhost:9092 --topic test-topic --delete
 - Set up the borrower notification service to publish notifications if a borrower's book is due soon
 - Set up the email service to "send" notification emails (mock implementation that just logs to console)
 - Implement book returns in the loans service
-- Add console app to show current book locations (could be as simple as periodic cqlsh query)
 - Publish book returned events from the loans service
 - Set up the book inventory service to listen for book returned events and publish low bin capacity notifications
 - Set up the pager service to listen for low capacity events and "page" librarians (mock implementation)
