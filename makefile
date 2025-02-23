@@ -14,7 +14,7 @@ init-keyspace: wait-for-cassandra
 	cqlsh -e "CREATE KEYSPACE IF NOT EXISTS library WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};"
 
 wait-for-kafka: start-docker-services
-	until kafka-topics --bootstrap-server localhost:9092 --list > /dev/null 2>&1; do \
+	until docker exec -it library-book-tracker-kafka-1 kafka-topics --bootstrap-server localhost:9092 --list > /dev/null 2>&1; do \
 	  echo "Kafka is unavailable - sleeping"; \
 	  sleep 1; \
 	done
