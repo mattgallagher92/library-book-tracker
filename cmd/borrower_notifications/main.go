@@ -34,22 +34,29 @@ func checkDueLoans(session *gocql.Session, provider timeProvider.Provider) error
 	twoDaysFromNow := today.AddDate(0, 0, 2)
 
 	log.Printf("Checking for loans due on %s", twoDaysFromNow.Format(time.RFC3339))
-	// Query for loans due in 2 days
+	// Query for loans due in 2 days that haven't been notified
 	upcomingLoans := session.Query(
 		`SELECT borrower_id, due_date, book_id, 
 		        borrower_name, borrower_email,
-		        book_title, book_author
+		        book_title, book_author,
+		        due_soon_notification_sent
 		 FROM loans 
-		 WHERE due_date = ?`,
+		 WHERE due_date = ? 
+		   AND due_soon_notification_sent = false
+		 ALLOW FILTERING`,
 		twoDaysFromNow,
 	).Iter()
 	log.Printf("Found at least %d loans due on %s", upcomingLoans.NumRows(), twoDaysFromNow.Format(time.RFC3339))
 
-	var loan Loan
+	var (
+		loan Loan
+		notificationSent bool
+	)
 	for upcomingLoans.Scan(
 		&loan.BorrowerID, &loan.DueDate, &loan.BookID,
 		&loan.BorrowerName, &loan.BorrowerEmail,
 		&loan.BookTitle, &loan.BookAuthor,
+		&notificationSent,
 	) {
 		log.Printf("NOTIFICATION: Dear %s (%s), reminder that '%s' by %s is due on %s",
 			loan.BorrowerName,
@@ -57,6 +64,16 @@ func checkDueLoans(session *gocql.Session, provider timeProvider.Provider) error
 			loan.BookTitle,
 			loan.BookAuthor,
 			loan.DueDate.Format("2006-01-02"))
+
+		// Mark notification as sent
+		if err := session.Query(
+			`UPDATE loans 
+			 SET due_soon_notification_sent = true 
+			 WHERE borrower_id = ? AND due_date = ? AND book_id = ?`,
+			loan.BorrowerID, loan.DueDate, loan.BookID,
+		).Exec(); err != nil {
+			log.Printf("Failed to mark notification as sent: %v", err)
+		}
 	}
 
 	return upcomingLoans.Close()
