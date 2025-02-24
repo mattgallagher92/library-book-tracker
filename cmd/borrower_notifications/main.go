@@ -163,7 +163,7 @@ func main() {
 	kafkaConfig.Producer.RequiredAcks = sarama.WaitForAll
 	kafkaConfig.Producer.Retry.Max = 5
 
-	producer, err := sarama.NewSyncProducer([]string{"localhost:9092"}, kafkaConfig)
+	producer, err := sarama.NewSyncProducer(cfg.KafkaBrokers, kafkaConfig)
 	if err != nil {
 		log.Fatalf("Failed to create Kafka producer: %v", err)
 	}

@@ -48,6 +48,7 @@ run-notifications-service: wait-for-cassandra wait-for-kafka
 	export SIMULATE_TIME=true && \
 	export CASSANDRA_HOSTS=localhost && \
 	export CASSANDRA_KEYSPACE=library && \
+	export KAFKA_BROKERS=localhost:9092 && \
 	go run cmd/borrower_notifications/main.go -interval 5
 
 run-email-service: wait-for-kafka
