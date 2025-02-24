@@ -48,7 +48,7 @@ run-loans-service: wait-for-cassandra
 	export CASSANDRA_KEYSPACE=library && \
 	go run cmd/loans/main.go
 
-run-notifications-service:
+run-notifications-service: wait-for-cassandra wait-for-kafka
 	export SIMULATE_TIME=true && \
 	export CASSANDRA_HOSTS=localhost && \
 	export CASSANDRA_KEYSPACE=library && \
