@@ -1,0 +1,10 @@
+{
+  "type": "record",
+  "name": "SendEmailCommand",
+  "namespace": "library.commands",
+  "fields": [
+    {"name": "toAddress", "type": "string"},
+    {"name": "subject", "type": "string"},
+    {"name": "body", "type": "string"}
+  ]
+}
