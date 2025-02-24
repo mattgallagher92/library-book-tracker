@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/Shopify/sarama"
+	"github.com/IBM/sarama"
 	"github.com/gocql/gocql"
 	"github.com/linkedin/goavro/v2"
 	"github.com/mattgallagher92/library-book-tracker/internal/config"
