@@ -1,4 +1,4 @@
-.PHONY: start-docker-services wait-for-cassandra wait-for-kafka migrate-up migrate-down seed-up seed-down regenerate-proto-go-code run-time-service run-loans-service run-notifications-service set-time advance-time-one-hour advance-time-one-day show-book-locations borrow-book
+.PHONY: start-docker-services wait-for-cassandra wait-for-kafka migrate-up migrate-down seed-up seed-down regenerate-proto-go-code run-time-service run-loans-service run-notifications-service run-email-service set-time advance-time-one-hour advance-time-one-day show-book-locations borrow-book
 
 start-docker-services:
 	docker compose up -d
@@ -49,6 +49,10 @@ run-notifications-service: wait-for-cassandra wait-for-kafka
 	export CASSANDRA_HOSTS=localhost && \
 	export CASSANDRA_KEYSPACE=library && \
 	go run cmd/borrower_notifications/main.go -interval 5
+
+run-email-service: wait-for-kafka
+	export KAFKA_BROKERS=localhost:9092 && \
+	go run cmd/email/main.go
 
 set-time:
 	@echo "Enter timestamp in RFC3339 format (e.g., 2024-01-01T00:00:00Z):"
