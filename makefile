@@ -1,4 +1,4 @@
-.PHONY: wait-for-cassandra init-keyspace wait-for-kafka migrate-up migrate-down
+.PHONY: start-docker-services wait-for-cassandra wait-for-kafka migrate-up migrate-down seed-up seed-down regenerate-proto-go-code run-time-service run-loans-service run-notifications-service set-time advance-time-one-hour advance-time-one-day show-book-locations borrow-book
 
 start-docker-services:
 	docker compose up -d
