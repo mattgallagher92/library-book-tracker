@@ -70,7 +70,6 @@ kafka-topics --bootstrap-server localhost:9092 --topic test-topic --delete
 
 ## Development roadmap
 
-- Set up the email service to "send" notification emails (mock implementation that just logs to console)
 - Implement book returns in the loans service
 - Publish book returned events from the loans service
 - Set up the book inventory service to listen for book returned events and publish low bin capacity notifications
