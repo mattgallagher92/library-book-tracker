@@ -95,7 +95,13 @@ k8s-load-images:
 	kind load docker-image email:latest --name library-system
 
 k8s-apply-config:
+	kubectl apply -f k8s/cassandra/statefulset.yaml
+	kubectl apply -f k8s/kafka/statefulset.yaml
 	kubectl apply -f k8s/configmaps/environment.yaml
 	kubectl apply -f k8s/services/loans.yaml
 	kubectl apply -f k8s/services/borrower-notifications.yaml
 	kubectl apply -f k8s/services/email.yaml
+	@echo "Waiting for Cassandra and Kafka to be ready..."
+	kubectl wait --for=condition=ready pod -l app=cassandra --timeout=120s
+	kubectl wait --for=condition=ready pod -l app=kafka --timeout=120s
+	kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=120s
