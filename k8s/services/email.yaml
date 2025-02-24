@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email
+  labels:
+    app: email
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email
+  template:
+    metadata:
+      labels:
+        app: email
+    spec:
+      containers:
+      - name: email
+        image: email:latest
+        imagePullPolicy: Never
+        env:
+        - name: KAFKA_BROKERS
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: kafka-brokers
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: email
+spec:
+  selector:
+    app: email
+  ports:
+  - port: 50053
+    targetPort: 50053
