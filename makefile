@@ -98,10 +98,15 @@ k8s-apply-config:
 	kubectl apply -f k8s/cassandra/statefulset.yaml
 	kubectl apply -f k8s/kafka/statefulset.yaml
 	kubectl apply -f k8s/configmaps/environment.yaml
+	@echo "Waiting for infrastructure services..."
+	kubectl wait --for=condition=ready pod -l app=cassandra --timeout=300s
+	kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s
+	kubectl wait --for=condition=ready pod -l app=kafka --timeout=300s
+	@echo "Deploying application services..."
 	kubectl apply -f k8s/services/loans.yaml
 	kubectl apply -f k8s/services/borrower-notifications.yaml
 	kubectl apply -f k8s/services/email.yaml
-	@echo "Waiting for Cassandra and Kafka to be ready..."
-	kubectl wait --for=condition=ready pod -l app=cassandra --timeout=120s
-	kubectl wait --for=condition=ready pod -l app=kafka --timeout=120s
-	kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=120s
+	@echo "Waiting for application services..."
+	kubectl wait --for=condition=ready pod -l app=loans --timeout=300s
+	kubectl wait --for=condition=ready pod -l app=borrower-notifications --timeout=300s
+	kubectl wait --for=condition=ready pod -l app=email --timeout=300s
