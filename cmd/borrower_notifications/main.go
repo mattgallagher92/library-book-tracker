@@ -45,7 +45,7 @@ func checkDueLoans(session *gocql.Session, provider timeProvider.Provider) error
 		   AND due_soon_notification_sent = false`,
 		twoDaysFromNow,
 	).Iter()
-	log.Printf("Found at least %d loans due on %s", upcomingLoans.NumRows(), twoDaysFromNow.Format(time.RFC3339))
+	log.Printf("Found at least %d unnotified loans due on %s", upcomingLoans.NumRows(), twoDaysFromNow.Format(time.RFC3339))
 
 	var (
 		loan             Loan
