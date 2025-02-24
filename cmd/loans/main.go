@@ -100,8 +100,8 @@ func handleBorrowBook(session *gocql.Session, provider timeProvider.Provider, cm
 		`INSERT INTO loans (
 			borrower_id, due_date, book_id,
 			borrower_name, borrower_email,
-			book_title, book_author
-		) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+			book_title, book_author, due_soon_notification_sent
+		) VALUES (?, ?, ?, ?, ?, ?, ?, false)`,
 		cmd.BorrowerID, dueDate, cmd.BookID,
 		borrowerName, borrowerEmail,
 		bookTitle, authorFirstName+" "+authorSurname,
