@@ -89,10 +89,13 @@ k8s-build-images:
 	docker build -t borrower-notifications:latest -f build/borrower-notifications/Dockerfile .
 	docker build -t email:latest -f build/email/Dockerfile .
 
+k8s-pull-images:
+	docker pull cassandra:5.0.3
 k8s-load-images:
 	kind load docker-image loans:latest --name library-system
 	kind load docker-image borrower-notifications:latest --name library-system
 	kind load docker-image email:latest --name library-system
+	kind load docker-image cassandra:5.0.3 --name library-system
 
 k8s-apply-config:
 	kubectl apply -f k8s/cassandra/statefulset.yaml
