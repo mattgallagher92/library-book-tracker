@@ -97,3 +97,5 @@ k8s-load-images:
 k8s-apply-config:
 	kubectl apply -f k8s/configmaps/environment.yaml
 	kubectl apply -f k8s/services/loans.yaml
+	kubectl apply -f k8s/services/borrower-notifications.yaml
+	kubectl apply -f k8s/services/email.yaml
