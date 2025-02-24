@@ -16,7 +16,7 @@ wait-for-kafka: start-docker-services
 	  echo "Kafka is unavailable - sleeping"; \
 	  sleep 1; \
 	done
-	docker exec -it library-book-tracker-kafka-1 kafka-topics --bootstrap-server localhost:9092 --topic book-due-soon-notifications --create --if-not-exists -partitions 1 --replication-factor 1
+	docker exec -it library-book-tracker-kafka-1 kafka-topics --bootstrap-server localhost:9092 --topic send-email-command --create --if-not-exists -partitions 1 --replication-factor 1
 	@echo "Kafka is up"
 
 # NOTE: x-multi-statment breaks the script by semicolons. This will not work if a statement has a semicolon in it.
