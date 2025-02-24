@@ -9,6 +9,7 @@ import (
 type Config struct {
 	CassandraHosts []string
 	Keyspace       string
+	KafkaBrokers   []string
 }
 
 // Load returns a Config populated from environment variables
@@ -23,8 +24,14 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("CASSANDRA_KEYSPACE environment variable is required")
 	}
 
+	brokers := os.Getenv("KAFKA_BROKERS")
+	if brokers == "" {
+		return nil, fmt.Errorf("KAFKA_BROKERS environment variable is required")
+	}
+
 	return &Config{
 		CassandraHosts: []string{hosts}, // For now just support single host
 		Keyspace:       keyspace,
+		KafkaBrokers:   []string{brokers}, // For now just support single broker
 	}, nil
 }

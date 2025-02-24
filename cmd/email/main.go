@@ -29,8 +29,14 @@ func main() {
 	config.Consumer.Group.Rebalance.Strategy = sarama.NewBalanceStrategyRoundRobin()
 	config.Consumer.Offsets.Initial = sarama.OffsetNewest
 
+	// Load configuration
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
+	}
+
 	// Create consumer group
-	group, err := sarama.NewConsumerGroup([]string{"localhost:9092"}, "email-service", config)
+	group, err := sarama.NewConsumerGroup(cfg.KafkaBrokers, "email-service", config)
 	if err != nil {
 		log.Fatalf("Failed to create consumer group: %v", err)
 	}
