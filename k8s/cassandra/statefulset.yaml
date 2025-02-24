@@ -29,7 +29,8 @@ spec:
     spec:
       containers:
       - name: cassandra
-        image: cassandra:latest
+        image: cassandra:4.1.3
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9042
           name: cql
