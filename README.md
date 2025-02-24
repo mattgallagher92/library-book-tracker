@@ -70,7 +70,6 @@ kafka-topics --bootstrap-server localhost:9092 --topic test-topic --delete
 
 ## Development roadmap
 
-- Set up the borrower notification service to publish notifications if a borrower's book is due soon
 - Set up the email service to "send" notification emails (mock implementation that just logs to console)
 - Implement book returns in the loans service
 - Publish book returned events from the loans service
