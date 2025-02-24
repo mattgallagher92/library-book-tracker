@@ -30,8 +30,8 @@ func main() {
 	saramaConfig.Consumer.Group.Rebalance.Strategy = sarama.NewBalanceStrategyRoundRobin()
 	saramaConfig.Consumer.Offsets.Initial = sarama.OffsetNewest
 
-	// Load configuration
-	cfg, err := config.Load()
+	// Load email-specific configuration
+	cfg, err := config.LoadEmailConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}

@@ -127,8 +127,8 @@ func main() {
 	log.Println("Borrower notification service starting...")
 	log.Printf("Will check for due loans every %d seconds", *checkInterval)
 
-	// Load configuration
-	cfg, err := config.Load()
+	// Load notifications-specific configuration
+	cfg, err := config.LoadNotificationsConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}

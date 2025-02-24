@@ -51,8 +51,7 @@ run-notifications-service: wait-for-cassandra wait-for-kafka
 	go run cmd/borrower_notifications/main.go -interval 5
 
 run-email-service: wait-for-kafka
-	export KAFKA_BROKERS=localhost:9092 && \
-	go run cmd/email/main.go
+	KAFKA_BROKERS=localhost:9092 go run cmd/email/main.go
 
 set-time:
 	@echo "Enter timestamp in RFC3339 format (e.g., 2024-01-01T00:00:00Z):"

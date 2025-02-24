@@ -172,8 +172,8 @@ func (s *loansServer) BorrowBook(ctx context.Context, req *loansv1.BorrowBookReq
 func main() {
 	log.Println("Loans service starting...")
 
-	// Load configuration
-	cfg, err := config.Load()
+	// Load loans-specific configuration
+	cfg, err := config.LoadLoansConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
