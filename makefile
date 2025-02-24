@@ -1,4 +1,4 @@
-.PHONY: start-docker-services wait-for-cassandra wait-for-kafka migrate-up migrate-down seed-up seed-down regenerate-proto-go-code run-time-service run-loans-service run-notifications-service run-email-service set-time advance-time-one-hour advance-time-one-day show-book-locations borrow-book k8s-setup k8s-install-kind k8s-create-cluster k8s-apply-config k8s-build-images k8s-load-images
+.PHONY: start-docker-services wait-for-cassandra wait-for-kafka migrate-up migrate-down seed-up seed-down regenerate-proto-go-code run-time-service run-loans-service run-notifications-service run-email-service set-time advance-time-one-hour advance-time-one-day show-book-locations borrow-book k8s-setup k8s-create-cluster k8s-apply-config k8s-build-images k8s-load-images
 
 start-docker-services:
 	docker compose up -d
@@ -74,15 +74,7 @@ borrow-book:
 	grpcurl -plaintext -d "{\"borrower_id\": \"$$borrower_id\", \"book_id\": \"$$book_id\"}" localhost:50051 loans.v1.LoansService/BorrowBook
 
 # Kubernetes setup targets
-k8s-setup: k8s-install-kind k8s-create-cluster k8s-build-images k8s-load-images k8s-apply-config
-
-k8s-install-kind:
-	@if ! command -v kind &> /dev/null; then \
-		echo "Installing KIND..."; \
-		curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64; \
-		chmod +x ./kind; \
-		sudo mv ./kind /usr/local/bin/kind; \
-	fi
+k8s-setup: k8s-create-cluster k8s-build-images k8s-load-images k8s-apply-config
 
 k8s-create-cluster:
 	@if ! kind get clusters | grep -q "^library-system$$"; then \
