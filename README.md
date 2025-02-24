@@ -30,7 +30,12 @@ More details are available in [the specification](./docs/spec.md).
 
 ## Local development
 
-### Install required tools
+### Prerequisites
+
+- [Docker](https://www.docker.com/get-started/)
+- The [nix package manager](https://nixos.org/download/)
+
+### Install required CLI tools
 
 ```sh
 nix develop
@@ -51,22 +56,21 @@ Run targets using, `make <target-name>`. For example, the following command star
 ```sh
 make run-loans-service
 ```
-### Test Kafka
+### See the app in action
 
-```sh
-docker exec -it library-book-tracker-kafka-1 bash
-```
+Seed the database with some test data with `make seed-up`, then run the following in different terminals:
 
-Then
+- `make run-loans-service`
+- `make run-notifications-service`
+- `make run-email-service`
+- `make run-time-service`
+- `make show-book-locations`
 
-```sh
-kafka-topics --bootstrap-server localhost:9092 --topic test-topic --create --partitions 1 --replication-factor 1
-kafka-topics --bootstrap-server localhost:9092 --list
-kafka-console-producer --bootstrap-server localhost:9092 --topic test-topic
-kafka-console-consumer --bootstrap-server localhost:9092 --topic test-topic --from-beginning
-kafka-topics --bootstrap-server localhost:9092 --list
-kafka-topics --bootstrap-server localhost:9092 --topic test-topic --delete
-```
+In another terminal, run the following in order:
+
+- `make set-time` to set the date to 2025-02-01.
+- `make borrow-book` to borrow a book (you can use the example UUIDs); notice the logs from the loans service and how the shown book location has changed.
+- `make set-time` to set the date to 2025-02-05; notice the logs from the notifications and email services.
 
 ## Development roadmap
 
