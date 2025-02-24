@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  cassandra-hosts: "cassandra-0.cassandra.default.svc.cluster.local"
+  cassandra-keyspace: "library"
+  kafka-brokers: "kafka-0.kafka.default.svc.cluster.local:9092"

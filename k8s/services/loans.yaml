@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loans
+  labels:
+    app: loans
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loans
+  template:
+    metadata:
+      labels:
+        app: loans
+    spec:
+      containers:
+      - name: loans
+        image: loans:latest
+        imagePullPolicy: Never  # Use locally built images
+        env:
+        - name: CASSANDRA_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: cassandra-hosts
+        - name: CASSANDRA_KEYSPACE
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: cassandra-keyspace
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loans
+spec:
+  selector:
+    app: loans
+  ports:
+  - port: 50051
+    targetPort: 50051
