@@ -9,6 +9,7 @@ import (
 
 	"github.com/IBM/sarama"
 	"github.com/linkedin/goavro/v2"
+	"github.com/mattgallagher92/library-book-tracker/internal/config"
 )
 
 func main() {
@@ -25,9 +26,9 @@ func main() {
 	}
 
 	// Configure Kafka consumer
-	config := sarama.NewConfig()
-	config.Consumer.Group.Rebalance.Strategy = sarama.NewBalanceStrategyRoundRobin()
-	config.Consumer.Offsets.Initial = sarama.OffsetNewest
+	saramaConfig := sarama.NewConfig()
+	saramaConfig.Consumer.Group.Rebalance.Strategy = sarama.NewBalanceStrategyRoundRobin()
+	saramaConfig.Consumer.Offsets.Initial = sarama.OffsetNewest
 
 	// Load configuration
 	cfg, err := config.Load()
@@ -36,7 +37,7 @@ func main() {
 	}
 
 	// Create consumer group
-	group, err := sarama.NewConsumerGroup(cfg.KafkaBrokers, "email-service", config)
+	group, err := sarama.NewConsumerGroup(cfg.KafkaBrokers, "email-service", saramaConfig)
 	if err != nil {
 		log.Fatalf("Failed to create consumer group: %v", err)
 	}
