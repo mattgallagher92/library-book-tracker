@@ -42,14 +42,13 @@ func checkDueLoans(session *gocql.Session, provider timeProvider.Provider) error
 		        due_soon_notification_sent
 		 FROM loans 
 		 WHERE due_date = ? 
-		   AND due_soon_notification_sent = false
-		 ALLOW FILTERING`,
+		   AND due_soon_notification_sent = false`,
 		twoDaysFromNow,
 	).Iter()
 	log.Printf("Found at least %d loans due on %s", upcomingLoans.NumRows(), twoDaysFromNow.Format(time.RFC3339))
 
 	var (
-		loan Loan
+		loan             Loan
 		notificationSent bool
 	)
 	for upcomingLoans.Scan(
