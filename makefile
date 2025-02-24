@@ -1,4 +1,4 @@
-.PHONY: start-docker-services wait-for-cassandra wait-for-kafka migrate-up migrate-down seed-up seed-down regenerate-proto-go-code run-time-service run-loans-service run-notifications-service run-email-service set-time advance-time-one-hour advance-time-one-day show-book-locations borrow-book
+.PHONY: start-docker-services wait-for-cassandra wait-for-kafka migrate-up migrate-down seed-up seed-down regenerate-proto-go-code run-time-service run-loans-service run-notifications-service run-email-service set-time advance-time-one-hour advance-time-one-day show-book-locations borrow-book k8s-setup k8s-install-kind k8s-create-cluster k8s-apply-config k8s-build-images k8s-load-images
 
 start-docker-services:
 	docker compose up -d
@@ -72,3 +72,36 @@ borrow-book:
 	@read -p "borrower_id (e.g. 08a5a2d0-a062-4e38-b9da-d328e5fc4a12): " borrower_id; \
 	read -p "book_id (e.g. 2a161877-ba45-4ce3-bbeb-1a279116a723): " book_id; \
 	grpcurl -plaintext -d "{\"borrower_id\": \"$$borrower_id\", \"book_id\": \"$$book_id\"}" localhost:50051 loans.v1.LoansService/BorrowBook
+
+# Kubernetes setup targets
+k8s-setup: k8s-install-kind k8s-create-cluster k8s-build-images k8s-load-images k8s-apply-config
+
+k8s-install-kind:
+	@if ! command -v kind &> /dev/null; then \
+		echo "Installing KIND..."; \
+		curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64; \
+		chmod +x ./kind; \
+		sudo mv ./kind /usr/local/bin/kind; \
+	fi
+
+k8s-create-cluster:
+	@if ! kind get clusters | grep -q "^library-system$$"; then \
+		echo "Creating Kubernetes cluster..."; \
+		kind create cluster --config k8s/kind-config.yaml; \
+	else \
+		echo "Cluster already exists"; \
+	fi
+
+k8s-build-images:
+	docker build -t loans:latest -f build/loans/Dockerfile .
+	docker build -t borrower-notifications:latest -f build/borrower-notifications/Dockerfile .
+	docker build -t email:latest -f build/email/Dockerfile .
+
+k8s-load-images:
+	kind load docker-image loans:latest --name library-system
+	kind load docker-image borrower-notifications:latest --name library-system
+	kind load docker-image email:latest --name library-system
+
+k8s-apply-config:
+	kubectl apply -f k8s/configmaps/environment.yaml
+	kubectl apply -f k8s/services/loans.yaml
