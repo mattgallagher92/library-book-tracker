@@ -8,7 +8,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/Shopify/sarama"
 	"github.com/gocql/gocql"
+	"github.com/linkedin/goavro/v2"
 	"github.com/mattgallagher92/library-book-tracker/internal/config"
 	timeProvider "github.com/mattgallagher92/library-book-tracker/internal/time"
 	borrowernotificationv1 "github.com/mattgallagher92/library-book-tracker/proto/borrower_notification/v1"
@@ -28,7 +30,7 @@ type Loan struct {
 	BookAuthor    string
 }
 
-func checkDueLoans(session *gocql.Session, provider timeProvider.Provider) error {
+func checkDueLoans(session *gocql.Session, provider timeProvider.Provider, producer sarama.SyncProducer, codec *goavro.Codec) error {
 	now := provider.Now()
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	twoDaysFromNow := today.AddDate(0, 0, 2)
@@ -57,12 +59,35 @@ func checkDueLoans(session *gocql.Session, provider timeProvider.Provider) error
 		&loan.BookTitle, &loan.BookAuthor,
 		&notificationSent,
 	) {
-		log.Printf("NOTIFICATION: Dear %s (%s), reminder that '%s' by %s is due on %s",
-			loan.BorrowerName,
-			loan.BorrowerEmail,
-			loan.BookTitle,
-			loan.BookAuthor,
-			loan.DueDate.Format("2006-01-02"))
+		// Create email command
+		emailBody := "Dear " + loan.BorrowerName + ",\n\n" +
+			"This is a reminder that '" + loan.BookTitle + "' by " + loan.BookAuthor +
+			" is due on " + loan.DueDate.Format("2006-01-02") + ".\n\n" +
+			"Kind regards,\nLibrary System"
+
+		// Create Avro record
+		native := map[string]interface{}{
+			"toAddress": loan.BorrowerEmail,
+			"subject":   "Library Book Due Soon: " + loan.BookTitle,
+			"body":      emailBody,
+		}
+
+		// Serialize the record
+		binary, err := codec.BinaryFromNative(nil, native)
+		if err != nil {
+			log.Printf("Failed to serialize email command: %v", err)
+			continue
+		}
+
+		// Send to Kafka
+		_, _, err = producer.SendMessage(&sarama.ProducerMessage{
+			Topic: "send-email-command",
+			Value: sarama.ByteEncoder(binary),
+		})
+		if err != nil {
+			log.Printf("Failed to send email command to Kafka: %v", err)
+			continue
+		}
 
 		// Mark notification as sent
 		if err := session.Query(
@@ -122,6 +147,28 @@ func main() {
 
 	log.Println("Connected to Cassandra")
 
+	// Load and parse Avro schema
+	schemaFile, err := os.ReadFile("schemas/avro/commands/send_email.avsc")
+	if err != nil {
+		log.Fatalf("Failed to read Avro schema: %v", err)
+	}
+	codec, err := goavro.NewCodec(string(schemaFile))
+	if err != nil {
+		log.Fatalf("Failed to parse Avro schema: %v", err)
+	}
+
+	// Configure Kafka producer
+	kafkaConfig := sarama.NewConfig()
+	kafkaConfig.Producer.Return.Successes = true
+	kafkaConfig.Producer.RequiredAcks = sarama.WaitForAll
+	kafkaConfig.Producer.Retry.Max = 5
+
+	producer, err := sarama.NewSyncProducer([]string{"localhost:9092"}, kafkaConfig)
+	if err != nil {
+		log.Fatalf("Failed to create Kafka producer: %v", err)
+	}
+	defer producer.Close()
+
 	// Initialize time provider
 	var tp timeProvider.Provider
 	if os.Getenv("SIMULATE_TIME") == "true" {
@@ -159,13 +206,13 @@ func main() {
 		defer ticker.Stop()
 
 		// Do an initial check immediately
-		if err := checkDueLoans(session, tp); err != nil {
+		if err := checkDueLoans(session, tp, producer, codec); err != nil {
 			log.Printf("Error checking due loans: %v", err)
 		}
 
 		// Then check periodically
 		for range ticker.C {
-			if err := checkDueLoans(session, tp); err != nil {
+			if err := checkDueLoans(session, tp, producer, codec); err != nil {
 				log.Printf("Error checking due loans: %v", err)
 			}
 		}
