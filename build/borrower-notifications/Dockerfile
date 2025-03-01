@@ -13,6 +13,7 @@ FROM alpine:latest
 
 WORKDIR /app
 COPY --from=builder /app/borrower-notifications .
+COPY ./schemas/avro/commands/send_email.avsc ./schemas/avro/commands/send_email.avsc
 
 EXPOSE 50052
 CMD ["./borrower-notifications"]

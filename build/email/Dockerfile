@@ -13,5 +13,6 @@ FROM alpine:latest
 
 WORKDIR /app
 COPY --from=builder /app/email .
+COPY ./schemas/avro/commands/send_email.avsc ./schemas/avro/commands/send_email.avsc
 
 CMD ["./email"]
