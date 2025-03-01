@@ -23,6 +23,7 @@
         protoc-gen-go
         protoc-gen-go-grpc
         grpcurl
+        confluent-platform
         kind
       ];
 
@@ -35,6 +36,7 @@
         protoc-gen-go --version
         protoc-gen-go-grpc --version
         grpcurl --version
+        echo "confluent $(kafka-topics --version)"
         kind --version
       '';
     };
