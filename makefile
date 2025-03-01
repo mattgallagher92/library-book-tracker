@@ -91,11 +91,16 @@ k8s-build-images:
 
 k8s-pull-images:
 	docker pull cassandra:5.0.3
+	docker pull confluentinc/cp-zookeeper:7.9.0
+	docker pull confluentinc/cp-kafka:7.9.0
+
 k8s-load-images:
 	kind load docker-image loans:latest --name library-system
 	kind load docker-image borrower-notifications:latest --name library-system
 	kind load docker-image email:latest --name library-system
 	kind load docker-image cassandra:5.0.3 --name library-system
+	kind load docker-image confluentinc/cp-zookeeper:7.9.0 --name library-system
+	kind load docker-image confluentinc/cp-kafka:7.9.0 --name library-system
 
 k8s-apply-config:
 	kubectl apply -f k8s/cassandra/statefulset.yaml
