@@ -107,14 +107,74 @@ k8s-apply-config:
 	kubectl apply -f k8s/kafka/statefulset.yaml
 	kubectl apply -f k8s/configmaps/environment.yaml
 	@echo "Waiting for infrastructure services..."
-	kubectl wait --for=condition=ready pod -l app=cassandra --timeout=300s
-	kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=300s
-	kubectl wait --for=condition=ready pod -l app=kafka --timeout=300s
+	@for i in 1 2 3 4 5; do \
+		echo "Waiting for Cassandra pods (attempt $$i)..."; \
+		sleep 10; \
+		if kubectl wait --for=condition=ready pod -l app=cassandra --timeout=60s; then \
+			break; \
+		fi; \
+		if [ $$i -eq 5 ]; then \
+			echo "Timed out waiting for Cassandra pods"; \
+			exit 1; \
+		fi; \
+	done
+	@for i in 1 2 3 4 5; do \
+		echo "Waiting for Zookeeper pods (attempt $$i)..."; \
+		sleep 10; \
+		if kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=60s; then \
+			break; \
+		fi; \
+		if [ $$i -eq 5 ]; then \
+			echo "Timed out waiting for Zookeeper pods"; \
+			exit 1; \
+		fi; \
+	done
+	@for i in 1 2 3 4 5; do \
+		echo "Waiting for Kafka pods (attempt $$i)..."; \
+		sleep 10; \
+		if kubectl wait --for=condition=ready pod -l app=kafka --timeout=60s; then \
+			break; \
+		fi; \
+		if [ $$i -eq 5 ]; then \
+			echo "Timed out waiting for Kafka pods"; \
+			exit 1; \
+		fi; \
+	done
 	@echo "Deploying application services..."
 	kubectl apply -f k8s/services/loans.yaml
 	kubectl apply -f k8s/services/borrower-notifications.yaml
 	kubectl apply -f k8s/services/email.yaml
 	@echo "Waiting for application services..."
-	kubectl wait --for=condition=ready pod -l app=loans --timeout=300s
-	kubectl wait --for=condition=ready pod -l app=borrower-notifications --timeout=300s
-	kubectl wait --for=condition=ready pod -l app=email --timeout=300s
+	@for i in 1 2 3 4 5; do \
+		echo "Waiting for Loans service (attempt $$i)..."; \
+		sleep 10; \
+		if kubectl wait --for=condition=ready pod -l app=loans --timeout=60s; then \
+			break; \
+		fi; \
+		if [ $$i -eq 5 ]; then \
+			echo "Timed out waiting for Loans service"; \
+			exit 1; \
+		fi; \
+	done
+	@for i in 1 2 3 4 5; do \
+		echo "Waiting for Borrower Notifications service (attempt $$i)..."; \
+		sleep 10; \
+		if kubectl wait --for=condition=ready pod -l app=borrower-notifications --timeout=60s; then \
+			break; \
+		fi; \
+		if [ $$i -eq 5 ]; then \
+			echo "Timed out waiting for Borrower Notifications service"; \
+			exit 1; \
+		fi; \
+	done
+	@for i in 1 2 3 4 5; do \
+		echo "Waiting for Email service (attempt $$i)..."; \
+		sleep 10; \
+		if kubectl wait --for=condition=ready pod -l app=email --timeout=60s; then \
+			break; \
+		fi; \
+		if [ $$i -eq 5 ]; then \
+			echo "Timed out waiting for Email service"; \
+			exit 1; \
+		fi; \
+	done
