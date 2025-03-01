@@ -58,7 +58,7 @@ make run-loans-service
 ```
 ### See the app in action
 
-Seed the database with some test data with `make seed-up`, then run the following in different terminals:
+Start the required background services with `make start-docker-services` (not started automatically in case you want to test with Kubernetes instead), seed the database with some test data with `make seed-up`, then run the following in different terminals:
 
 - `make run-loans-service`
 - `make run-notifications-service`
@@ -79,5 +79,4 @@ In another terminal, run the following in order:
 - Set up the book inventory service to listen for book returned events and publish low bin capacity notifications
 - Set up the pager service to listen for low capacity events and "page" librarians (mock implementation)
 - Handle book move commands (bin to trolley, trolley to shelves) in the book inventory service
-- Manage services in Kubernetes
 - Use Envoy Proxy

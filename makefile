@@ -26,7 +26,7 @@ endef
 start-docker-services:
 	docker compose up -d
 
-wait-for-cassandra: start-docker-services
+wait-for-cassandra:
 	until cqlsh localhost 9042 -e "describe keyspaces;" > /dev/null 2>&1; do \
 	  echo "Cassandra is unavailable - sleeping"; \
 	  sleep 1; \
@@ -142,32 +142,11 @@ k8s-apply-config:
 	$(call wait-for-k8s-resource,Borrower Notifications service,app=borrower-notifications)
 	$(call wait-for-k8s-resource,Email service,app=email)
 
-k8s-ensure-keyspace:
+k8s-forward-ports-cassandra:
 	@trap 'kill $$!' EXIT; \
-	kubectl port-forward service/infra-cassandra 9042:9042 & \
-	sleep 5; \
-	cqlsh -e "CREATE KEYSPACE IF NOT EXISTS library WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};"
+	kubectl port-forward service/infra-cassandra 9042:9042
 
-k8s-migrate-up: k8s-ensure-keyspace
+k8s-forward-ports-loans:
 	@trap 'kill $$!' EXIT; \
-	kubectl port-forward service/infra-cassandra 9042:9042 & \
-	sleep 5; \
-	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true" -path ./schemas/cassandra/migrations up
+	kubectl port-forward service/loans 50051:50051
 
-k8s-migrate-down: k8s-ensure-keyspace
-	@trap 'kill $$!' EXIT; \
-	kubectl port-forward service/infra-cassandra 9042:9042 & \
-	sleep 5; \
-	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true" -path ./schemas/cassandra/migrations down
-
-k8s-seed-up: k8s-migrate-up
-	@trap 'kill $$!' EXIT; \
-	kubectl port-forward service/infra-cassandra 9042:9042 & \
-	sleep 5; \
-	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds up
-
-k8s-seed-down: k8s-ensure-keyspace
-	@trap 'kill $$!' EXIT; \
-	kubectl port-forward service/infra-cassandra 9042:9042 & \
-	sleep 5; \
-	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds down
