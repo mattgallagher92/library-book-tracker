@@ -1,13 +1,17 @@
-# Function to wait for k8s resources to be ready
+# Function to wait for k8s resources to be ready.
+# Sleeps between first and second attempts in case it's caused by the pod not being created
+# (otherwise command would fail immediately).
 # Args:
 #   $(1) - Resource name for display
 #   $(2) - Label selector
 define wait-for-k8s-resource
 	@set -e; \
 	for i in 1 2 3 4 5; do \
+		if [ $$i -eq 2 ]; then \
+			sleep 10; \
+		fi; \
 		echo "Waiting for $(1) (attempt $$i)..."; \
-		sleep 10; \
-		if kubectl wait --for=condition=ready pod -l $(2) --timeout=60s; then \
+		if kubectl wait --for=condition=ready pod -l $(2) --timeout=10s; then \
 			break; \
 		fi; \
 		if [ $$i -eq 5 ]; then \
