@@ -142,11 +142,11 @@ k8s-apply-config:
 	$(call wait-for-k8s-resource,Borrower Notifications service,app=borrower-notifications)
 	$(call wait-for-k8s-resource,Email service,app=email)
 
-k8s-forward-ports-cassandra:
-	@trap 'kill $$!' EXIT; \
-	kubectl port-forward service/infra-cassandra 9042:9042
-
-k8s-forward-ports-loans:
-	@trap 'kill $$!' EXIT; \
-	kubectl port-forward service/loans 50051:50051
+k8s-forward-ports:
+	@echo "Starting port forwarding... (Press Ctrl+C to stop)"
+	# On exit, kill processes spawned later.
+	@trap 'kill $$(jobs -p)' EXIT; \
+	kubectl port-forward service/infra-cassandra 9042:9042 & \
+	kubectl port-forward service/loans 50051:50051 & \
+	wait
 
