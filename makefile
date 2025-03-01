@@ -143,13 +143,13 @@ k8s-apply-config:
 	$(call wait-for-k8s-resource,Email service,app=email)
 
 k8s-migrate-up:
-	migrate -database "cassandra://cassandra-0.cassandra.default.svc.cluster.local:9042/library?x-multi-statement=true" -path ./schemas/cassandra/migrations up
+	migrate -database "cassandra://cassandra-0.infra-cassandra.default.svc.cluster.local:9042/library?x-multi-statement=true" -path ./schemas/cassandra/migrations up
 
 k8s-migrate-down:
-	migrate -database "cassandra://cassandra-0.cassandra.default.svc.cluster.local:9042/library?x-multi-statement=true" -path ./schemas/cassandra/migrations down
+	migrate -database "cassandra://cassandra-0.infra-cassandra.default.svc.cluster.local:9042/library?x-multi-statement=true" -path ./schemas/cassandra/migrations down
 
 k8s-seed-up: k8s-migrate-up
-	migrate -database "cassandra://cassandra-0.cassandra.default.svc.cluster.local:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds up
+	migrate -database "cassandra://cassandra-0.infra-cassandra.default.svc.cluster.local:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds up
 
 k8s-seed-down:
-	migrate -database "cassandra://cassandra-0.cassandra.default.svc.cluster.local:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds down
+	migrate -database "cassandra://cassandra-0.infra-cassandra.default.svc.cluster.local:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds down
