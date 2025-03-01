@@ -143,13 +143,25 @@ k8s-apply-config:
 	$(call wait-for-k8s-resource,Email service,app=email)
 
 k8s-migrate-up:
-	migrate -database "cassandra://cassandra-0.infra-cassandra.default.svc.cluster.local:9042/library?x-multi-statement=true" -path ./schemas/cassandra/migrations up
+	@trap 'kill $$!' EXIT; \
+	kubectl port-forward service/infra-cassandra 9042:9042 & \
+	sleep 5; \
+	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true" -path ./schemas/cassandra/migrations up
 
 k8s-migrate-down:
-	migrate -database "cassandra://cassandra-0.infra-cassandra.default.svc.cluster.local:9042/library?x-multi-statement=true" -path ./schemas/cassandra/migrations down
+	@trap 'kill $$!' EXIT; \
+	kubectl port-forward service/infra-cassandra 9042:9042 & \
+	sleep 5; \
+	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true" -path ./schemas/cassandra/migrations down
 
 k8s-seed-up: k8s-migrate-up
-	migrate -database "cassandra://cassandra-0.infra-cassandra.default.svc.cluster.local:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds up
+	@trap 'kill $$!' EXIT; \
+	kubectl port-forward service/infra-cassandra 9042:9042 & \
+	sleep 5; \
+	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds up
 
 k8s-seed-down:
-	migrate -database "cassandra://cassandra-0.infra-cassandra.default.svc.cluster.local:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds down
+	@trap 'kill $$!' EXIT; \
+	kubectl port-forward service/infra-cassandra 9042:9042 & \
+	sleep 5; \
+	migrate -database "cassandra://localhost:9042/library?x-multi-statement=true&x-migrations-table=schema_migrations_seeds" -path ./schemas/cassandra/seeds down
