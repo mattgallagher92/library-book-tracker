@@ -3,7 +3,8 @@
 #   $(1) - Resource name for display
 #   $(2) - Label selector
 define wait-for-k8s-resource
-	@for i in 1 2 3 4 5; do \
+	@set -e; \
+	for i in 1 2 3 4 5; do \
 		echo "Waiting for $(1) (attempt $$i)..."; \
 		sleep 10; \
 		if kubectl wait --for=condition=ready pod -l $(2) --timeout=60s; then \
