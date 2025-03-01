@@ -1,3 +1,21 @@
+# Function to wait for k8s resources to be ready
+# Args:
+#   $(1) - Resource name for display
+#   $(2) - Label selector
+define wait-for-k8s-resource
+	@for i in 1 2 3 4 5; do \
+		echo "Waiting for $(1) (attempt $$i)..."; \
+		sleep 10; \
+		if kubectl wait --for=condition=ready pod -l $(2) --timeout=60s; then \
+			break; \
+		fi; \
+		if [ $$i -eq 5 ]; then \
+			echo "Timed out waiting for $(1)"; \
+			exit 1; \
+		fi; \
+	done
+endef
+
 .PHONY: start-docker-services wait-for-cassandra wait-for-kafka migrate-up migrate-down seed-up seed-down regenerate-proto-go-code run-time-service run-loans-service run-notifications-service run-email-service set-time advance-time-one-hour advance-time-one-day show-book-locations borrow-book k8s-setup k8s-create-cluster k8s-apply-config k8s-build-images k8s-load-images
 
 start-docker-services:
@@ -107,74 +125,14 @@ k8s-apply-config:
 	kubectl apply -f k8s/kafka/statefulset.yaml
 	kubectl apply -f k8s/configmaps/environment.yaml
 	@echo "Waiting for infrastructure services..."
-	@for i in 1 2 3 4 5; do \
-		echo "Waiting for Cassandra pods (attempt $$i)..."; \
-		sleep 10; \
-		if kubectl wait --for=condition=ready pod -l app=cassandra --timeout=60s; then \
-			break; \
-		fi; \
-		if [ $$i -eq 5 ]; then \
-			echo "Timed out waiting for Cassandra pods"; \
-			exit 1; \
-		fi; \
-	done
-	@for i in 1 2 3 4 5; do \
-		echo "Waiting for Zookeeper pods (attempt $$i)..."; \
-		sleep 10; \
-		if kubectl wait --for=condition=ready pod -l app=zookeeper --timeout=60s; then \
-			break; \
-		fi; \
-		if [ $$i -eq 5 ]; then \
-			echo "Timed out waiting for Zookeeper pods"; \
-			exit 1; \
-		fi; \
-	done
-	@for i in 1 2 3 4 5; do \
-		echo "Waiting for Kafka pods (attempt $$i)..."; \
-		sleep 10; \
-		if kubectl wait --for=condition=ready pod -l app=kafka --timeout=60s; then \
-			break; \
-		fi; \
-		if [ $$i -eq 5 ]; then \
-			echo "Timed out waiting for Kafka pods"; \
-			exit 1; \
-		fi; \
-	done
+	$(call wait-for-k8s-resource,Cassandra,app=cassandra)
+	$(call wait-for-k8s-resource,Zookeeper,app=zookeeper)
+	$(call wait-for-k8s-resource,Kafka,app=kafka)
 	@echo "Deploying application services..."
 	kubectl apply -f k8s/services/loans.yaml
 	kubectl apply -f k8s/services/borrower-notifications.yaml
 	kubectl apply -f k8s/services/email.yaml
 	@echo "Waiting for application services..."
-	@for i in 1 2 3 4 5; do \
-		echo "Waiting for Loans service (attempt $$i)..."; \
-		sleep 10; \
-		if kubectl wait --for=condition=ready pod -l app=loans --timeout=60s; then \
-			break; \
-		fi; \
-		if [ $$i -eq 5 ]; then \
-			echo "Timed out waiting for Loans service"; \
-			exit 1; \
-		fi; \
-	done
-	@for i in 1 2 3 4 5; do \
-		echo "Waiting for Borrower Notifications service (attempt $$i)..."; \
-		sleep 10; \
-		if kubectl wait --for=condition=ready pod -l app=borrower-notifications --timeout=60s; then \
-			break; \
-		fi; \
-		if [ $$i -eq 5 ]; then \
-			echo "Timed out waiting for Borrower Notifications service"; \
-			exit 1; \
-		fi; \
-	done
-	@for i in 1 2 3 4 5; do \
-		echo "Waiting for Email service (attempt $$i)..."; \
-		sleep 10; \
-		if kubectl wait --for=condition=ready pod -l app=email --timeout=60s; then \
-			break; \
-		fi; \
-		if [ $$i -eq 5 ]; then \
-			echo "Timed out waiting for Email service"; \
-			exit 1; \
-		fi; \
-	done
+	$(call wait-for-k8s-resource,Loans service,app=loans)
+	$(call wait-for-k8s-resource,Borrower Notifications service,app=borrower-notifications)
+	$(call wait-for-k8s-resource,Email service,app=email)
