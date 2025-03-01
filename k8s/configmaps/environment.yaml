@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: app-config
 data:
-  cassandra-hosts: "cassandra-0.cassandra.default.svc.cluster.local"
+  cassandra-hosts: "cassandra-0.infra-cassandra.default.svc.cluster.local"
   cassandra-keyspace: "library"
-  kafka-brokers: "kafka-0.kafka.default.svc.cluster.local:9092"
+  kafka-brokers: "kafka-0.infra-kafka.default.svc.cluster.local:9092"
