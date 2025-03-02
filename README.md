@@ -37,13 +37,15 @@ The commit history is less polished than I'd usually aim for. There are more com
 ### Prerequisites
 
 - [Docker](https://www.docker.com/get-started/)
-- The [nix package manager](https://nixos.org/download/)
+- The [nix package manager](https://nixos.org/download/) (optional; you can install all required CLI tools via an alternative method of your choice, if you prefer)
 
 ### Install required CLI tools
 
 ```sh
 nix develop
 ```
+
+Alternatively, install the tools listed as packages in ./flake.nix, either up front or on demand.
 
 ### Run common tasks
 
