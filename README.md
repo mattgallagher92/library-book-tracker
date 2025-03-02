@@ -28,6 +28,10 @@ In order to run a library effectively, it is necessary to allow staff to see and
 
 More details are available in [the specification](./docs/spec.md).
 
+## A note on the Git history
+
+The commit history is less polished than I'd usually aim for. There are more commits that only partially implement something than usual and more commits that made (incorrect) changes that are overridden soon after. I'd usually squash some of those commits together. However, this is the first project for which I've relied heavily on AI and I thought that, it would be interesting to keep the log of which changes were made by AI (for which the commit author contains "(aider)"), perhaps for later analysis.
+
 ## Local development
 
 ### Prerequisites
